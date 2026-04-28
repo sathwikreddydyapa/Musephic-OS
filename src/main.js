@@ -64,8 +64,7 @@ let todoList = [];
 /**
  * INITIALIZATION PROTOCOL
  */
-function init() {
-  const overlay = document.getElementById('init-overlay');
+function init() {\n  const overlay = document.getElementById('init-overlay');
   const app = document.getElementById('app');
   const initBtn = document.getElementById('init-btn');
   
@@ -75,27 +74,41 @@ function init() {
     overlay.style.opacity = '0';
     setTimeout(() => {
       overlay.style.display = 'none';
-      app.style.display = 'block';
+      app.style.display = 'grid';
       window.speechSynthesis.resume();
-      speak("Welcome back, Sir. Musephic is online.");
+      speak("నమస్కారం సార్. మ్యూస్ ఆన్లైన్లో ఉంది.");
       startListening();
     }, 500);
     
-    logToConsole('MUSEPHIC OS v7.0.0 (Holographic) loaded.', 'system');
+    logToConsole('MUSEPHIC OS v7.0.0 (Bento 3D) loaded.', 'system');
+    logToConsole('Neural link established via Strategic Bridge.', 'system');
   };
 
-  if (initBtn) initBtn.addEventListener('click', startApp);
+  if (initBtn) initBtn.addEventListener('click', startApp);\n
+  // Initialize Draggable UI
+  document.querySelectorAll('.bento-box').forEach(makeDraggable);
+  const avatar = document.querySelector('.sentinel-avatar');
+  if (avatar) makeDraggable(avatar);
+
+  
+
+  
 
   // Bind UI Elements
   clockEl = document.getElementById('clock');
   dateEl = document.getElementById('date');
   consoleEl = document.getElementById('console');
+  heartEl = document.getElementById('core-heart');
+  waveformEl = document.getElementById('waveform');
+  micStatusEl = document.getElementById('mic-status');
   talkBtn = document.getElementById('talk-btn');
+  historyToggle = document.getElementById('history-toggle');
+  historyPanel = document.getElementById('history-panel');
 
   // Verify Critical Elements
-  if (!clockEl || !consoleEl) {
-    console.warn("HUD sync in progress...");
-    setTimeout(init, 1000);
+  if (!clockEl || !consoleEl || !heartEl) {
+    console.error("CRITICAL ERROR: Essential HUD elements missing. Retrying in 1s...");
+    console.warn('Retrying init...'); setTimeout(init, 1000);
     return;
   }
 
@@ -328,7 +341,6 @@ function logToConsole(message, type = 'system') {
 
 function setupWaveform() {
   if (!waveformEl) return;
-  if (!waveformEl) return;
   waveformEl.innerHTML = '';
   for (let i = 0; i < 20; i++) {
     const bar = document.createElement('div');
@@ -360,7 +372,7 @@ function speak(text) {
   window.speechSynthesis.resume();
   
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'en-US';
+  utterance.lang = 'te-IN';
   
   const setVoice = () => {
     const voices = window.speechSynthesis.getVoices();
@@ -397,7 +409,7 @@ let recognition;
 if (Recognition) {
   recognition = new Recognition();
   recognition.continuous = true;
-  recognition.lang = 'en-US';
+  recognition.lang = 'te-IN';
   recognition.interimResults = true;
 
   let lastProcessed = '';
@@ -548,11 +560,11 @@ function triggerContentTool(toolName) {
   if (inputArea) inputArea.style.display = 'flex';
   if (activeLabel) activeLabel.textContent = `SELECTED TOOL: ${toolName}`;
   if (userInput) userInput.value = '';
-  if (outputArea)     speak(resultText.substring(0, 300)); // Speak first part of AI response\n    outputArea.innerHTML = 'Awaiting your instructions...';
+  if (outputArea) outputArea.innerHTML = 'Awaiting your instructions...';
   if (utilities) utilities.style.display = 'none';
 
   if (toolName === 'data_vault') {
-        speak(resultText.substring(0, 300)); // Speak first part of AI response\n    outputArea.innerHTML = `
+    outputArea.innerHTML = `
       <div style="text-align: center; padding: 20px;">
         <h2 style="color: var(--accent-blue); margin-bottom: 20px;">SYSTEM DATA VAULT</h2>
         <p style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 30px;">
@@ -605,7 +617,7 @@ function formatMarkdown(text) {
 async function executeToolTask() {
   const outputArea = document.getElementById('studio-output-area');
   const originalContent = outputArea.innerHTML;
-      speak(resultText.substring(0, 300)); // Speak first part of AI response\n    outputArea.innerHTML = `<div class="thinking-loader" style="color: var(--accent-blue); font-style: italic;">Neural Link active... Processing multi-agent request...</div>`;
+  outputArea.innerHTML = `<div class="thinking-loader" style="color: var(--accent-blue); font-style: italic;">Neural Link active... Processing multi-agent request...</div>`;
   logToConsole("SYSTEM: Processing neural request...", 'system');
 
   const apiKey = getApiKey();
@@ -624,7 +636,7 @@ async function executeToolTask() {
   outputArea = document.getElementById('studio-output-area');
   const utilities = document.getElementById('studio-utilities');
   
-      speak(resultText.substring(0, 300)); // Speak first part of AI response\n    outputArea.innerHTML = `<div class="generating-pulse">PROCESSING<br>THROUGH NEURAL LINK...</div>`;
+  outputArea.innerHTML = `<div class="generating-pulse">PROCESSING<br>THROUGH NEURAL LINK...</div>`;
   if (utilities) utilities.style.display = 'none';
   
   speak("Executing task.");
@@ -690,7 +702,7 @@ Provide a "Titan Execution Roadmap" broken down by these eight perspectives. Use
       .replace(/\*(.*?)\*/g, '<em>$1</em>')
       .replace(/\n/g, '<br>');
 
-        speak(resultText.substring(0, 300)); // Speak first part of AI response\n    outputArea.innerHTML = `<div style="padding: 10px; border-left: 3px solid var(--accent-blue);">
+    outputArea.innerHTML = `<div style="padding: 10px; border-left: 3px solid var(--accent-blue);">
       <h4 style="color: var(--accent-blue); margin-bottom: 15px; font-family: var(--font-display); letter-spacing: 2px;">${currentToolName} OUTPUT</h4>
       ${formattedHTML}
     </div>`;
@@ -719,7 +731,7 @@ Provide a "Titan Execution Roadmap" broken down by these eight perspectives. Use
       }
     }
 
-        speak(resultText.substring(0, 300)); // Speak first part of AI response\n    outputArea.innerHTML = `<div style="color: red; padding: 10px; border-left: 3px solid red;">
+    outputArea.innerHTML = `<div style="color: red; padding: 10px; border-left: 3px solid red;">
       <strong>API ERROR:</strong><br>${errorMsg}
     </div>`;
     speak("I encountered an error connecting to the neural network.");
