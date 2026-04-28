@@ -568,6 +568,11 @@ function formatMarkdown(text) {
 }
 
 async function executeToolTask() {
+  const outputArea = document.getElementById('studio-output-area');
+  const originalContent = outputArea.innerHTML;
+  outputArea.innerHTML = `<div class="thinking-loader" style="color: var(--accent-blue); font-style: italic;">Neural Link active... Processing multi-agent request...</div>`;
+  logToConsole("SYSTEM: Processing neural request...", 'system');
+
   const apiKey = getApiKey();
   if (!apiKey) {
     speak("Sir, the API key is missing.");
