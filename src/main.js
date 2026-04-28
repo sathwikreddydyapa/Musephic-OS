@@ -64,7 +64,8 @@ let todoList = [];
 /**
  * INITIALIZATION PROTOCOL
  */
-function init() {\n  const overlay = document.getElementById('init-overlay');
+function init() {
+  const overlay = document.getElementById('init-overlay');
   const app = document.getElementById('app');
   const initBtn = document.getElementById('init-btn');
   
@@ -74,41 +75,27 @@ function init() {\n  const overlay = document.getElementById('init-overlay');
     overlay.style.opacity = '0';
     setTimeout(() => {
       overlay.style.display = 'none';
-      app.style.display = 'grid';
+      app.style.display = 'block';
       window.speechSynthesis.resume();
-      speak("నమస్కారం సార్. మ్యూస్ ఆన్లైన్లో ఉంది.");
+      speak("Welcome back, Sir. Musephic is online.");
       startListening();
     }, 500);
     
-    logToConsole('MUSEPHIC OS v7.0.0 (Bento 3D) loaded.', 'system');
-    logToConsole('Neural link established via Strategic Bridge.', 'system');
+    logToConsole('MUSEPHIC OS v7.0.0 (Holographic) loaded.', 'system');
   };
 
-  if (initBtn) initBtn.addEventListener('click', startApp);\n
-  // Initialize Draggable UI
-  document.querySelectorAll('.bento-box').forEach(makeDraggable);
-  const avatar = document.querySelector('.sentinel-avatar');
-  if (avatar) makeDraggable(avatar);
-
-  
-
-  
+  if (initBtn) initBtn.addEventListener('click', startApp);
 
   // Bind UI Elements
   clockEl = document.getElementById('clock');
   dateEl = document.getElementById('date');
   consoleEl = document.getElementById('console');
-  heartEl = document.getElementById('core-heart');
-  waveformEl = document.getElementById('waveform');
-  micStatusEl = document.getElementById('mic-status');
   talkBtn = document.getElementById('talk-btn');
-  historyToggle = document.getElementById('history-toggle');
-  historyPanel = document.getElementById('history-panel');
 
   // Verify Critical Elements
   if (!clockEl || !consoleEl) {
     console.warn("HUD sync in progress...");
-    console.warn('Retrying init...'); setTimeout(init, 1000);
+    setTimeout(init, 1000);
     return;
   }
 
@@ -339,7 +326,8 @@ function logToConsole(message, type = 'system') {
   consoleEl.scrollTop = consoleEl.scrollHeight;
 }
 
-function setupWaveform() {\n  if (!waveformEl) return;
+function setupWaveform() {
+  if (!waveformEl) return;
   if (!waveformEl) return;
   waveformEl.innerHTML = '';
   for (let i = 0; i < 20; i++) {
