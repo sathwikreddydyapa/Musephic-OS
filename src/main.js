@@ -599,7 +599,13 @@ async function executeToolTask() {
   
   speak("Executing task.");
 
-  let promptText = `You are Musephic, an elite 24/7 autonomous AI assistant running inside a futuristic OS. 
+  let promptText = `
+You are Musephic, an elite 24/7 autonomous AI assistant.
+CAPABILITIES:
+- You can LAUNCH local applications (e.g., CapCut, Chrome). To do so, include [LAUNCH: AppName] in your response.
+- You can NAVIGATE to websites. To do so, include [NAVIGATE: url1, url2] in your response.
+- Format all business strategy beautifully in Markdown.
+ 
 The user wants to use the tool: "${currentToolName}".
 User Instructions/Context: "${userInput || 'Execute default automated routine for this tool.'}"
 
