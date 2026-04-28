@@ -65,6 +65,11 @@ let todoList = [];
  * INITIALIZATION PROTOCOL
  */
 function init() {
+  // Initialize Draggable UI
+  document.querySelectorAll('.bento-box').forEach(makeDraggable);
+  const avatar = document.querySelector('.muse-avatar');
+  if (avatar) makeDraggable(avatar);
+
   const overlay = document.getElementById('init-overlay');
   const app = document.getElementById('app');
   const initBtn = document.getElementById('init-btn');
