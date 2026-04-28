@@ -360,7 +360,7 @@ function speak(text) {
   window.speechSynthesis.resume();
   
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'te-IN';
+  utterance.lang = 'en-US';
   
   const setVoice = () => {
     const voices = window.speechSynthesis.getVoices();
@@ -397,7 +397,7 @@ let recognition;
 if (Recognition) {
   recognition = new Recognition();
   recognition.continuous = true;
-  recognition.lang = 'te-IN';
+  recognition.lang = 'en-US';
   recognition.interimResults = true;
 
   let lastProcessed = '';
@@ -548,11 +548,11 @@ function triggerContentTool(toolName) {
   if (inputArea) inputArea.style.display = 'flex';
   if (activeLabel) activeLabel.textContent = `SELECTED TOOL: ${toolName}`;
   if (userInput) userInput.value = '';
-  if (outputArea) outputArea.innerHTML = 'Awaiting your instructions...';
+  if (outputArea)     speak(resultText.substring(0, 300)); // Speak first part of AI response\n    outputArea.innerHTML = 'Awaiting your instructions...';
   if (utilities) utilities.style.display = 'none';
 
   if (toolName === 'data_vault') {
-    outputArea.innerHTML = `
+        speak(resultText.substring(0, 300)); // Speak first part of AI response\n    outputArea.innerHTML = `
       <div style="text-align: center; padding: 20px;">
         <h2 style="color: var(--accent-blue); margin-bottom: 20px;">SYSTEM DATA VAULT</h2>
         <p style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 30px;">
@@ -605,7 +605,7 @@ function formatMarkdown(text) {
 async function executeToolTask() {
   const outputArea = document.getElementById('studio-output-area');
   const originalContent = outputArea.innerHTML;
-  outputArea.innerHTML = `<div class="thinking-loader" style="color: var(--accent-blue); font-style: italic;">Neural Link active... Processing multi-agent request...</div>`;
+      speak(resultText.substring(0, 300)); // Speak first part of AI response\n    outputArea.innerHTML = `<div class="thinking-loader" style="color: var(--accent-blue); font-style: italic;">Neural Link active... Processing multi-agent request...</div>`;
   logToConsole("SYSTEM: Processing neural request...", 'system');
 
   const apiKey = getApiKey();
@@ -624,7 +624,7 @@ async function executeToolTask() {
   outputArea = document.getElementById('studio-output-area');
   const utilities = document.getElementById('studio-utilities');
   
-  outputArea.innerHTML = `<div class="generating-pulse">PROCESSING<br>THROUGH NEURAL LINK...</div>`;
+      speak(resultText.substring(0, 300)); // Speak first part of AI response\n    outputArea.innerHTML = `<div class="generating-pulse">PROCESSING<br>THROUGH NEURAL LINK...</div>`;
   if (utilities) utilities.style.display = 'none';
   
   speak("Executing task.");
@@ -690,7 +690,7 @@ Provide a "Titan Execution Roadmap" broken down by these eight perspectives. Use
       .replace(/\*(.*?)\*/g, '<em>$1</em>')
       .replace(/\n/g, '<br>');
 
-    outputArea.innerHTML = `<div style="padding: 10px; border-left: 3px solid var(--accent-blue);">
+        speak(resultText.substring(0, 300)); // Speak first part of AI response\n    outputArea.innerHTML = `<div style="padding: 10px; border-left: 3px solid var(--accent-blue);">
       <h4 style="color: var(--accent-blue); margin-bottom: 15px; font-family: var(--font-display); letter-spacing: 2px;">${currentToolName} OUTPUT</h4>
       ${formattedHTML}
     </div>`;
@@ -719,7 +719,7 @@ Provide a "Titan Execution Roadmap" broken down by these eight perspectives. Use
       }
     }
 
-    outputArea.innerHTML = `<div style="color: red; padding: 10px; border-left: 3px solid red;">
+        speak(resultText.substring(0, 300)); // Speak first part of AI response\n    outputArea.innerHTML = `<div style="color: red; padding: 10px; border-left: 3px solid red;">
       <strong>API ERROR:</strong><br>${errorMsg}
     </div>`;
     speak("I encountered an error connecting to the neural network.");
