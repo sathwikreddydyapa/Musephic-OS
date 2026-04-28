@@ -1,55 +1,5 @@
 import './style.css'
 
-/**
- * VISUALS: STARFIELD BACKGROUND
- */
-function initStarfield() {
-  const canvas = document.getElementById('starfield');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  let stars = [];
-  
-  function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
-  
-  window.addEventListener('resize', resize);
-  resize();
-  
-  for (let i = 0; i < 200; i++) {
-    stars.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      size: Math.random() * 1.5,
-      speed: Math.random() * 0.5
-    });
-  }
-  
-  function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#fff';
-    stars.forEach(star => {
-      ctx.beginPath();
-      ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
-      ctx.fill();
-      star.y += star.speed;
-      if (star.y > canvas.height) star.y = 0;
-    });
-    requestAnimationFrame(animate);
-  }
-  animate();
-}
-
-
-/**
- * CORE NEURAL LINK: RETRIEVE API KEY
- */
-function getApiKey() {
-  const stored = localStorage.getItem('gemini_api_key');
-  return stored || "AIzaSyBqsbgoTBT5j1pgyrVYNYfVtnarH2JSTAQ";
-}
-
 // Constants
 const VOICES = {
   assistant: { lang: 'en-GB', name: 'Google UK English Male' } 
@@ -65,11 +15,47 @@ let todoList = [];
  * INITIALIZATION PROTOCOL
  */
 function init() {
-  // Initialize Draggable UI
-  document.querySelectorAll('.bento-box').forEach(makeDraggable);
-  const avatar = document.querySelector('.muse-avatar');
-  if (avatar) makeDraggable(avatar);
+  // Neural Link Auto-Check
+  const apiKey = localStorage.getItem('gemini_api_key');
+  if (!apiKey) {
+    document.getElementById('neural-link-modal').style.display = 'flex';
+  }
 
+  document.getElementById('save-api-key-btn')?.addEventListener('click', () => {
+    const key = document.getElementById('api-key-input').value.trim();
+    if (key) {
+      localStorage.setItem('gemini_api_key', key);
+      document.getElementById('neural-link-modal').style.display = 'none';
+      speak("Neural Link established, Sir.");
+      logToConsole("SYSTEM: Gemini Neural Link successfully established.", 'system');
+      // Refresh advice if needed
+      if (expenses.length > 0) analyzeFinances();
+    }
+  });
+
+  // Bind UI Elements
+  clockEl = document.getElementById('clock');
+  dateEl = document.getElementById('date');
+  consoleEl = document.getElementById('console');
+  heartEl = document.getElementById('core-heart');
+  waveformEl = document.getElementById('waveform');
+  micStatusEl = document.getElementById('mic-status');
+  talkBtn = document.getElementById('talk-btn');
+  historyToggle = document.getElementById('history-toggle');
+  historyPanel = document.getElementById('history-panel');
+
+  // Verify Critical Elements
+  if (!clockEl || !consoleEl || !heartEl) {
+    console.error("CRITICAL ERROR: Essential HUD elements missing. Retrying in 1s...");
+    setTimeout(init, 1000);
+    return;
+  }
+
+  // Setup Timers & Static UI
+  updateTime();
+  setInterval(updateTime, 1000);
+  setupWaveform();
+  
   const overlay = document.getElementById('init-overlay');
   const app = document.getElementById('app');
   const initBtn = document.getElementById('init-btn');
@@ -80,36 +66,17 @@ function init() {
     overlay.style.opacity = '0';
     setTimeout(() => {
       overlay.style.display = 'none';
-      app.style.display = 'block';
+      app.style.display = 'grid';
       window.speechSynthesis.resume();
-      speak("Welcome back, Sir. Musephic is online.");
+      speak("నమస్కారం సార్. మ్యూస్ ఆన్లైన్లో ఉంది.");
       startListening();
     }, 500);
     
-    logToConsole('MUSEPHIC OS v7.0.0 (Holographic) loaded.', 'system');
+    logToConsole('MUSEPHIC OS v7.0.0 (Bento 3D) loaded.', 'system');
+    logToConsole('Neural link established via Strategic Bridge.', 'system');
   };
 
   if (initBtn) initBtn.addEventListener('click', startApp);
-
-  // Bind UI Elements
-  clockEl = document.getElementById('clock');
-  dateEl = document.getElementById('date');
-  consoleEl = document.getElementById('console');
-  talkBtn = document.getElementById('talk-btn');
-
-  // Verify Critical Elements
-  if (!clockEl || !consoleEl) {
-    console.warn("HUD sync in progress...");
-    setTimeout(init, 1000);
-    return;
-  }
-
-  // Setup Timers & Static UI
-  updateTime();
-  setInterval(updateTime, 1000);
-  setupWaveform();
-  
-
   overlay?.addEventListener('click', (e) => {
     if (e.target === overlay) startApp();
   });
@@ -333,7 +300,6 @@ function logToConsole(message, type = 'system') {
 
 function setupWaveform() {
   if (!waveformEl) return;
-  if (!waveformEl) return;
   waveformEl.innerHTML = '';
   for (let i = 0; i < 20; i++) {
     const bar = document.createElement('div');
@@ -365,7 +331,7 @@ function speak(text) {
   window.speechSynthesis.resume();
   
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'en-US';
+  utterance.lang = 'te-IN';
   
   const setVoice = () => {
     const voices = window.speechSynthesis.getVoices();
@@ -402,7 +368,7 @@ let recognition;
 if (Recognition) {
   recognition = new Recognition();
   recognition.continuous = true;
-  recognition.lang = 'en-US';
+  recognition.lang = 'te-IN';
   recognition.interimResults = true;
 
   let lastProcessed = '';
@@ -553,35 +519,8 @@ function triggerContentTool(toolName) {
   if (inputArea) inputArea.style.display = 'flex';
   if (activeLabel) activeLabel.textContent = `SELECTED TOOL: ${toolName}`;
   if (userInput) userInput.value = '';
-  if (outputArea)     speak(resultText.substring(0, 300)); // Speak first part of AI response\n    outputArea.innerHTML = 'Awaiting your instructions...';
+  if (outputArea) outputArea.innerHTML = 'Awaiting your instructions...';
   if (utilities) utilities.style.display = 'none';
-
-  if (toolName === 'data_vault') {
-        speak(resultText.substring(0, 300)); // Speak first part of AI response\n    outputArea.innerHTML = `
-      <div style="text-align: center; padding: 20px;">
-        <h2 style="color: var(--accent-blue); margin-bottom: 20px;">SYSTEM DATA VAULT</h2>
-        <p style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 30px;">
-          Export your entire OS state (To-Dos, Finances, API Key) to migrate between your local dev environment and your live Render deployment.
-        </p>
-        
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-          <button onclick="exportState()" class="primary-action-btn" style="background: rgba(0,210,255,0.2) !important;">
-            <div style="font-size: 1.5rem; margin-bottom: 10px;">📤</div>
-            BACKUP BRAIN (.MUSE)
-          </button>
-          
-          <div style="position: relative;">
-            <button onclick="document.getElementById('import-file').click()" class="primary-action-btn" style="background: rgba(255,204,0,0.1) !important; color: var(--accent-gold) !important; width: 100%;">
-              <div style="font-size: 1.5rem; margin-bottom: 10px;">📥</div>
-              RESTORE BRAIN
-            </button>
-            <input type="file" id="import-file" style="display: none;" onchange="importState(this)">
-          </div>
-        </div>
-      </div>
-    `;
-    if (inputArea) inputArea.style.display = 'none';
-  }
 
   const isTe = recognition && recognition.lang === 'te-IN';
   speak(isTe ? `${toolName} సిద్ధంగా ఉంది.` : `${toolName} ready. Please provide context.`);
@@ -608,12 +547,7 @@ function formatMarkdown(text) {
 }
 
 async function executeToolTask() {
-  const outputArea = document.getElementById('studio-output-area');
-  const originalContent = outputArea.innerHTML;
-      speak(resultText.substring(0, 300)); // Speak first part of AI response\n    outputArea.innerHTML = `<div class="thinking-loader" style="color: var(--accent-blue); font-style: italic;">Neural Link active... Processing multi-agent request...</div>`;
-  logToConsole("SYSTEM: Processing neural request...", 'system');
-
-  const apiKey = getApiKey();
+  const apiKey = localStorage.getItem('gemini_api_key');
   if (!apiKey) {
     speak("Sir, the API key is missing.");
     alert("API Key not found in local storage. Please contact administrator to re-insert the Gemini API key.");
@@ -626,21 +560,15 @@ async function executeToolTask() {
     return;
   }
 
-  outputArea = document.getElementById('studio-output-area');
+  const outputArea = document.getElementById('studio-output-area');
   const utilities = document.getElementById('studio-utilities');
   
-      speak(resultText.substring(0, 300)); // Speak first part of AI response\n    outputArea.innerHTML = `<div class="generating-pulse">PROCESSING<br>THROUGH NEURAL LINK...</div>`;
+  outputArea.innerHTML = `<div class="generating-pulse">PROCESSING<br>THROUGH NEURAL LINK...</div>`;
   if (utilities) utilities.style.display = 'none';
   
   speak("Executing task.");
 
-  let promptText = `
-You are Musephic, an elite 24/7 autonomous AI assistant.
-CAPABILITIES:
-- You can LAUNCH local applications (e.g., CapCut, Chrome). To do so, include [LAUNCH: AppName] in your response.
-- You can NAVIGATE to websites. To do so, include [NAVIGATE: url1, url2] in your response.
-- Format all business strategy beautifully in Markdown.
- 
+  let promptText = `You are Musephic, an elite 24/7 autonomous AI assistant running inside a futuristic OS. 
 The user wants to use the tool: "${currentToolName}".
 User Instructions/Context: "${userInput || 'Execute default automated routine for this tool.'}"
 
@@ -666,21 +594,20 @@ Provide a "Titan Execution Roadmap" broken down by these eight perspectives. Use
   }
 
   try {
-    
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
-
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`, {
       method: 'POST',
-      signal: controller.signal,
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: promptText }] }],
-        generationConfig: { temperature: 0.7 }
+        contents: [{
+          parts: [{ text: promptText }]
+        }],
+        generationConfig: {
+          temperature: 0.7,
+        }
       })
     });
-    clearTimeout(timeoutId);
-
 
     const data = await response.json();
     
@@ -695,7 +622,7 @@ Provide a "Titan Execution Roadmap" broken down by these eight perspectives. Use
       .replace(/\*(.*?)\*/g, '<em>$1</em>')
       .replace(/\n/g, '<br>');
 
-        speak(resultText.substring(0, 300)); // Speak first part of AI response\n    outputArea.innerHTML = `<div style="padding: 10px; border-left: 3px solid var(--accent-blue);">
+    outputArea.innerHTML = `<div style="padding: 10px; border-left: 3px solid var(--accent-blue);">
       <h4 style="color: var(--accent-blue); margin-bottom: 15px; font-family: var(--font-display); letter-spacing: 2px;">${currentToolName} OUTPUT</h4>
       ${formattedHTML}
     </div>`;
@@ -724,7 +651,7 @@ Provide a "Titan Execution Roadmap" broken down by these eight perspectives. Use
       }
     }
 
-        speak(resultText.substring(0, 300)); // Speak first part of AI response\n    outputArea.innerHTML = `<div style="color: red; padding: 10px; border-left: 3px solid red;">
+    outputArea.innerHTML = `<div style="color: red; padding: 10px; border-left: 3px solid red;">
       <strong>API ERROR:</strong><br>${errorMsg}
     </div>`;
     speak("I encountered an error connecting to the neural network.");
@@ -821,7 +748,7 @@ async function generateAISchedule() {
   const container = document.getElementById('ai-schedule-container');
   if (!container) return;
   
-  const apiKey = getApiKey();
+  const apiKey = localStorage.getItem('gemini_api_key');
   if (!apiKey) {
     speak("Sir, the API key is missing. Cannot generate schedule.");
     alert("API Key not found in local storage.");
@@ -854,21 +781,14 @@ Format your response EXACTLY as a series of HTML divs using the following struct
 Do not output ANY markdown wrappers, backticks, or extra text. ONLY output the raw HTML blocks.`;
 
   try {
-    
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
-
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`, {
       method: 'POST',
-      signal: controller.signal,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ parts: [{ text: promptText }] }],
         generationConfig: { temperature: 0.7 }
       })
     });
-    clearTimeout(timeoutId);
-
 
     const data = await response.json();
     if (data.error) throw new Error(data.error.message);
@@ -988,7 +908,7 @@ async function analyzeFinances() {
   
   clearTimeout(analyzeTimeout);
   
-  const apiKey = getApiKey();
+  const apiKey = localStorage.getItem('gemini_api_key');
   if (!apiKey) return;
   
   adviceEl.innerHTML = '<span class="generating-pulse">ANALYZING...</span>';
@@ -1005,21 +925,14 @@ My recent entries: ${recent}.
 Provide exactly ONE short sentence (max 15 words) of sharp, actionable financial advice or observation based on these numbers. No pleasantries. No markdown.`;
 
     try {
-      
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
-
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      signal: controller.signal,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: promptText }] }],
-        generationConfig: { temperature: 0.7 }
-      })
-    });
-    clearTimeout(timeoutId);
-
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: promptText }] }],
+          generationConfig: { temperature: 0.4 }
+        })
+      });
       
       const data = await response.json();
       if (data.error) throw new Error(data.error.message);
@@ -1032,59 +945,3 @@ Provide exactly ONE short sentence (max 15 words) of sharp, actionable financial
     }
   }, 2000);
 }
-
-
-/**
- * DATA VAULT LOGIC (STATE MIGRATION)
- */
-function exportState() {
-  const state = {
-    gemini_api_key: getApiKey(),
-    musephic_todos: localStorage.getItem('musephic_todos'),
-    musephic_finances: localStorage.getItem('musephic_finances'),
-    timestamp: new Date().toISOString(),
-    version: "1.0.0"
-  };
-  
-  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `musephic_brain_${new Date().toISOString().split('T')[0]}.muse`;
-  a.click();
-  URL.revokeObjectURL(url);
-  speak("Brain backup successful, Sir. Download complete.");
-}
-
-async function importState(input) {
-  const file = input.files[0];
-  if (!file) return;
-  
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const state = JSON.parse(e.target.result);
-      if (!state.version) throw new Error("Invalid brain file format.");
-      
-      if (confirm("Sir, this will overwrite your current OS state with the data from the backup. Proceed?")) {
-        if (state.gemini_api_key) localStorage.setItem('gemini_api_key', state.gemini_api_key);
-        if (state.musephic_todos) localStorage.setItem('musephic_todos', state.musephic_todos);
-        if (state.musephic_finances) localStorage.setItem('musephic_finances', state.musephic_finances);
-        
-        speak("Restoration complete. Neural Link synchronized. Reloading OS.");
-        setTimeout(() => window.location.reload(), 2000);
-      }
-    } catch (err) {
-      alert("Error restoring brain: " + err.message);
-      speak("Sir, the backup file appears corrupted.");
-    }
-  };
-  reader.readAsText(file);
-}
-
-// Attach to window for onclick handlers
-window.exportState = exportState;
-window.importState = importState;
-
-// BOOTSTRAP OS
-init();
