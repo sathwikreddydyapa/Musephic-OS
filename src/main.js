@@ -546,8 +546,13 @@ function formatMarkdown(text) {
   return html;
 }
 
+async function getApiKey() {
+  const stored = localStorage.getItem('gemini_api_key');
+  return stored || "AIzaSyBqsbgoTBT5j1pgyrVYNYfVtnarH2JSTAQ";
+}
+
 async function executeToolTask() {
-  const apiKey = localStorage.getItem('gemini_api_key');
+  const apiKey = await getApiKey();
   if (!apiKey) {
     speak("Sir, the API key is missing.");
     alert("API Key not found in local storage. Please contact administrator to re-insert the Gemini API key.");
