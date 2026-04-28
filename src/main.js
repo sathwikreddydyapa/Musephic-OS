@@ -522,6 +522,33 @@ function triggerContentTool(toolName) {
   if (outputArea) outputArea.innerHTML = 'Awaiting your instructions...';
   if (utilities) utilities.style.display = 'none';
 
+  if (toolName === 'data_vault') {
+    outputArea.innerHTML = `
+      <div style="text-align: center; padding: 20px;">
+        <h2 style="color: var(--accent-blue); margin-bottom: 20px;">SYSTEM DATA VAULT</h2>
+        <p style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 30px;">
+          Export your entire OS state (To-Dos, Finances, API Key) to migrate between your local dev environment and your live Render deployment.
+        </p>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <button onclick="exportState()" class="primary-action-btn" style="background: rgba(0,210,255,0.2) !important;">
+            <div style="font-size: 1.5rem; margin-bottom: 10px;">📤</div>
+            BACKUP BRAIN (.MUSE)
+          </button>
+          
+          <div style="position: relative;">
+            <button onclick="document.getElementById('import-file').click()" class="primary-action-btn" style="background: rgba(255,204,0,0.1) !important; color: var(--accent-gold) !important; width: 100%;">
+              <div style="font-size: 1.5rem; margin-bottom: 10px;">📥</div>
+              RESTORE BRAIN
+            </button>
+            <input type="file" id="import-file" style="display: none;" onchange="importState(this)">
+          </div>
+        </div>
+      </div>
+    `;
+    if (inputArea) inputArea.style.display = 'none';
+  }
+
   const isTe = recognition && recognition.lang === 'te-IN';
   speak(isTe ? `${toolName} సిద్ధంగా ఉంది.` : `${toolName} ready. Please provide context.`);
   logToConsole(`CONTENT STUDIO: Loaded ${toolName} interface.`, 'system');
@@ -945,3 +972,56 @@ Provide exactly ONE short sentence (max 15 words) of sharp, actionable financial
     }
   }, 2000);
 }
+
+
+/**
+ * DATA VAULT LOGIC (STATE MIGRATION)
+ */
+function exportState() {
+  const state = {
+    gemini_api_key: localStorage.getItem('gemini_api_key'),
+    musephic_todos: localStorage.getItem('musephic_todos'),
+    musephic_finances: localStorage.getItem('musephic_finances'),
+    timestamp: new Date().toISOString(),
+    version: "1.0.0"
+  };
+  
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `musephic_brain_${new Date().toISOString().split('T')[0]}.muse`;
+  a.click();
+  URL.revokeObjectURL(url);
+  speak("Brain backup successful, Sir. Download complete.");
+}
+
+async function importState(input) {
+  const file = input.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const state = JSON.parse(e.target.result);
+      if (!state.version) throw new Error("Invalid brain file format.");
+      
+      if (confirm("Sir, this will overwrite your current OS state with the data from the backup. Proceed?")) {
+        if (state.gemini_api_key) localStorage.setItem('gemini_api_key', state.gemini_api_key);
+        if (state.musephic_todos) localStorage.setItem('musephic_todos', state.musephic_todos);
+        if (state.musephic_finances) localStorage.setItem('musephic_finances', state.musephic_finances);
+        
+        speak("Restoration complete. Neural Link synchronized. Reloading OS.");
+        setTimeout(() => window.location.reload(), 2000);
+      }
+    } catch (err) {
+      alert("Error restoring brain: " + err.message);
+      speak("Sir, the backup file appears corrupted.");
+    }
+  };
+  reader.readAsText(file);
+}
+
+// Attach to window for onclick handlers
+window.exportState = exportState;
+window.importState = importState;
