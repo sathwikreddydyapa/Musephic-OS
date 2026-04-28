@@ -106,8 +106,8 @@ function init() {\n  const overlay = document.getElementById('init-overlay');
   historyPanel = document.getElementById('history-panel');
 
   // Verify Critical Elements
-  if (!clockEl || !consoleEl || !heartEl) {
-    console.error("CRITICAL ERROR: Essential HUD elements missing. Retrying in 1s...");
+  if (!clockEl || !consoleEl) {
+    console.warn("HUD sync in progress...");
     console.warn('Retrying init...'); setTimeout(init, 1000);
     return;
   }
@@ -339,7 +339,7 @@ function logToConsole(message, type = 'system') {
   consoleEl.scrollTop = consoleEl.scrollHeight;
 }
 
-function setupWaveform() {
+function setupWaveform() {\n  if (!waveformEl) return;
   if (!waveformEl) return;
   waveformEl.innerHTML = '';
   for (let i = 0; i < 20; i++) {
