@@ -5,492 +5,132 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Musephic OS | Sentinel Edition</title>
-    <style>
-      #starfield {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: -1;
-        pointer-events: none;
-        background: #020617;
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Syncopate:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/src/style.css">
+    <script>
+      function forceOpen() {
+        const overlay = document.getElementById('init-overlay');
+        const app = document.getElementById('app');
+        if (overlay) overlay.style.display = 'none';
+        if (app) app.style.display = 'block';
+        if (window.speechSynthesis) window.speechSynthesis.resume();
       }
-    </style>
+    </script>
   </head>
   <body>
     <canvas id="starfield"></canvas>
     
-    <!-- Sentinel HUD (Pseudo-Lock) -->
-  <div id="sentinel-overlay" style="display: none;">
-    <div class="sentinel-core">
-      <div class="sentinel-ring"></div>
-      <div class="sentinel-avatar">
-        <img src="muse_avatar.png" alt="Sentinel">
-      </div>
-      <h1 class="glitch" data-text="SENTINEL ACTIVE">SENTINEL ACTIVE</h1>
-      <p>SYSTEM UNDER GUARDIAN PROTECTION</p>
-      <div class="sentinel-stats">
-        <div class="stat-box">MIC: CONTINUOUS</div>
-        <div class="stat-box">CAM: MONITORING</div>
-      </div>
-      <button id="unlock-btn" class="futuristic-btn">AUTHENTICATE & UNLOCK</button>
-    </div>
-    <video id="sentinel-video" autoplay muted></video>
-  </div>
-    
-    <div id="init-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10000;">
-      <h1 class="logo" style="font-size: 3rem; margin-bottom: 20px;">MUSEPHIC</h1>
-      <button id="init-btn" style="padding: 20px 40px !important; font-size: 1rem !important;">SYNC NEURAL BRIDGE</button>
+    <!-- INITIALIZATION OVERLAY -->
+    <div id="init-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10000; background: #020617; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+      <h1 style="font-family: 'Syncopate'; font-size: 3rem; color: #00f2ff; letter-spacing: 10px; margin-bottom: 40px;">MUSEPHIC</h1>
+      <button id="init-btn" onclick="forceOpen()" style="background: transparent; border: 1px solid #00f2ff; color: #00f2ff; padding: 15px 40px; font-family: 'Outfit'; cursor: pointer; letter-spacing: 3px; transition: all 0.3s ease;">SYNC NEURAL BRIDGE</button>
     </div>
 
     <div id="app" style="display: none;">
-      <!-- TOP CONTROL BAR (Pill) -->
-      <header class="control-pill glass-panel">
-        <h1 class="logo">MUSEPHIC</h1>
-        <div style="display: flex; gap: 20px; align-items: center;">
-          <div class="status-pill"><div class="pulse-dot"></div> NEURAL LINK: ACTIVE</div>
-          <div class="status-pill" style="border-color: var(--accent-purple); color: var(--accent-purple);"><div class="pulse-dot" style="background: var(--accent-purple);"></div> CONTINUOUS LEARNING: ACTIVE</div>
-          <div id="clock" style="font-family: 'Outfit'; font-weight: 600; font-size: 1.2rem; letter-spacing: 2px;">00:00:00</div>
+      <!-- TOP NAVIGATION -->
+      <nav class="top-nav">
+        <div class="nav-brand">MUSEPHIC</div>
+        <div class="nav-links">
+          <span>HOME</span>
+          <span id="open-studio-btn">STUDIO</span>
+          <span>SETTINGS</span>
+          <span>ABOUT</span>
         </div>
-      </header>
+      </nav>
 
-      <!-- SPATIAL BENTO GRID -->
-      <div class="bento-container">
-        
-        <!-- LEFT WING -->
-        <div class="bento-col left-col">
-          <aside class="glass-panel panel-vitals bento-box">
-            <div class="panel-header">SYSTEM VITALS</div>
-            <div style="display: flex; flex-direction: column; gap: 15px;">
-              <div>
-                <div style="font-size: 0.65rem; color: var(--text-dim); margin-bottom: 5px;">PROCESSOR LOAD</div>
-                <div class="progress-track">
-                  <div class="progress-fill" style="width: 34%;"></div>
-                </div>
-              </div>
-              <div style="font-size: 1.5rem; font-weight: 300;">34.2% <span style="font-size: 0.7rem; color: #00ff88; font-weight:600;">OPTIMAL</span></div>
-            </div>
-          </aside>
-
-          <aside class="glass-panel bento-box" id="system-status-panel">
-            <div class="panel-header">DIAGNOSTICS</div>
-            <div class="diagnostic-grid">
-              <div class="diag-item">
-                <span class="diag-label">NEURAL</span>
-                <span id="status-api" class="diag-value" style="color: #00d2ff;">SECURE</span>
-              </div>
-              <div class="diag-item">
-                <span class="diag-label">MIC</span>
-                <span id="status-mic" class="diag-value" style="color: #ff00ff;">READY</span>
-              </div>
-              <div class="diag-item">
-                <span class="diag-label">POWER</span>
-                <span id="status-battery" class="diag-value">---%</span>
-              </div>
-            </div>
-            <div id="status-loc" style="margin-top: 10px; font-size: 0.6rem; color: var(--text-dim);">LOCATING...</div>
-          </aside>
-
-          <aside class="glass-panel panel-finance bento-box">
-            <div class="panel-header">FINANCE HUB</div>
-            <div id="expense-total" style="font-size: 2.5rem; font-weight: 300; color: var(--accent-gold); margin-bottom: 10px;">$0.00</div>
-            
-            <div style="display: flex; gap: 8px; margin-bottom: 15px;">
-              <input type="text" id="expense-input" placeholder="e.g. Food 15" style="flex: 1; padding: 8px; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; font-family: var(--font-main); font-size: 0.8rem;">
-              <button id="add-expense-btn" class="primary-action-btn" style="padding: 8px 12px !important; font-size: 0.8rem !important; border-radius: 6px;">ADD</button>
-              <button id="clear-expense-btn" class="icon-btn" style="padding: 8px 12px !important; font-size: 0.8rem !important; border-radius: 6px; border: 1px solid rgba(255,0,0,0.2);">CLEAR</button>
-            </div>
-
-            <div id="category-breakdown" style="font-size: 0.8rem; color: var(--text-dim); display: flex; flex-direction: column; gap: 4px; max-height: 80px; overflow-y: auto;">
-              <!-- Categories injected here -->
-            </div>
-            <div id="savings-advice" style="margin-top: 15px; font-size: 0.75rem; color: var(--accent-blue); font-style: italic;">Awaiting ledger entries...</div>
-          </aside>
-          
-          <aside class="glass-panel panel-calendar bento-box" style="display: flex; flex-direction: column;">
-            <div class="panel-header">AI AUTO-SCHEDULER</div>
-            <button id="ai-schedule-btn" class="primary-action-btn pulse-btn" style="padding: 10px !important; font-size: 0.8rem !important; margin-bottom: 10px;">AUTO-SCHEDULE DAY</button>
-            <div id="ai-schedule-container" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
-              <div style="color: var(--text-dim); font-size: 0.8rem; text-align: center; margin-top: 10px;">Waiting to sync...</div>
-            </div>
-          </aside>
+      <!-- LEFT WING -->
+      <div class="hologram-panel widget-left-top">
+        <div class="panel-title">📍 LOCATION</div>
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+          <span style="font-size: 1.2rem;">🇮🇳</span>
+          <div style="font-size: 0.9rem; font-weight: bold;" id="location-name">Bengaluru</div>
         </div>
+        <div id="status-loc" style="font-size: 0.6rem; color: #00f2ff; opacity: 0.7;">LAT: 12.97 / LNG: 77.59</div>
+      </div>
 
-        <!-- CENTER CORE (Avatar & Comms) -->
-        <div class="bento-col center-col">
-          <main class="core-hero glass-panel bento-box" style="flex: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;">
-            <div id="mic-status" class="mic-status-label" style="position: absolute; top: 20px; color: var(--accent-blue); font-size: 0.75rem; letter-spacing: 3px;">NEURAL LINK Standby</div>
-            <div class="muse-avatar-container" id="core-heart" style="margin: 30px 0;">
-              <img src="muse_avatar.png" alt="Muse" class="muse-avatar">
-            </div>
-            <div id="waveform" class="waveform" style="position: absolute; bottom: 30px;"></div>
-          </main>
-
-          <section class="glass-panel panel-comm bento-box" style="flex: 1;">
-            <div class="panel-header" style="justify-content: space-between;">
-              COMMUNICATIONS
-              <div style="display: flex; gap: 10px;">
-                <div id="lang-switcher" class="lang-switcher-pill">
-                  <button id="lang-en" class="lang-btn active">EN</button>
-                  <button id="lang-te" class="lang-btn">TE</button>
-                </div>
-                <button id="test-audio-btn" class="icon-btn">TEST</button>
-                <button id="talk-btn" class="icon-btn highlight">OVERRIDE</button>
-              </div>
-            </div>
-            <div id="console" class="console">
-              <div class="console-line">Neural link standby...</div>
-            </div>
-            <div id="history-panel" style="display: none;"></div>
-          </section>
+      <div class="hologram-panel widget-left-bottom">
+        <div class="panel-title">⚙️ SYSTEM STATUS</div>
+        <div class="diagnostic-item">
+          <span class="diag-label">BATTERY</span>
+          <span id="status-battery" class="diag-value">--%</span>
         </div>
-
-        <!-- RIGHT WING -->
-        <div class="bento-col right-col">
-          <aside class="glass-panel panel-operations bento-box" style="display: flex; flex-direction: column;">
-            <div class="panel-header">OPERATIONS CORE</div>
-            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-              <input type="text" id="todo-input" placeholder="Add a new task..." style="flex: 1; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; padding: 10px; font-family: var(--font-main);">
-              <button id="add-todo-btn" class="icon-btn highlight" style="font-weight: 600;">ADD</button>
-            </div>
-            <div id="todo-list-container" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; max-height: 200px;">
-              <!-- To-do items will be dynamically injected here -->
-            </div>
-          </aside>
-
-          <aside class="glass-panel panel-security bento-box">
-            <div class="panel-header">SENTINEL SECURITY</div>
-            <div class="security-feed">
-              <video id="video-uplink" autoplay muted></video>
-              <div id="alert-overlay" class="alert-overlay">ALARM</div>
-            </div>
-            <canvas id="capture-canvas" style="display: none;"></canvas>
-          </aside>
-
-          <aside class="glass-panel panel-creation bento-box">
-            <div class="panel-header">OS STUDIO</div>
-            <div id="content-status" style="font-size: 0.8rem; margin-bottom: 15px; color: var(--text-dim);">49 TOOLS READY</div>
-            <button id="open-studio-btn" class="primary-action-btn pulse-btn">LAUNCH STUDIO</button>
-          </aside>
+        <div class="diagnostic-item">
+          <span class="diag-label">NETWORK</span>
+          <span id="status-net" class="diag-value" style="color: #00ff88;">ONLINE</span>
         </div>
+        <div class="diagnostic-item">
+          <span class="diag-label">CONNECTION</span>
+          <span class="diag-value">5G <span class="status-dot"></span></span>
+        </div>
+        <div class="diagnostic-item">
+          <span class="diag-label">BLUETOOTH</span>
+          <span class="diag-value">READY <span class="status-dot"></span></span>
+        </div>
+      </div>
 
+      <!-- CENTER CORE -->
+      <div class="ai-core-container">
+        <div class="ai-sphere" id="talk-btn"></div>
+      </div>
+
+      <!-- RIGHT WING -->
+      <div class="hologram-panel widget-right-top">
+        <div class="panel-title">🛡️ SECURITY</div>
+        <div class="diagnostic-item"><span class="diag-label">NEURAL LINK</span><span id="status-api" class="diag-value">SECURE <span class="status-dot"></span></span></div>
+        <div class="diagnostic-item"><span class="diag-label">MIC ARRAY</span><span id="status-mic" class="diag-value">LISTENING <span class="status-dot"></span></span></div>
+      </div>
+
+      <div class="hologram-panel widget-right-bottom">
+        <div class="panel-title">📊 SYSTEM_INFO</div>
+        <div id="clock" style="font-size: 2rem; font-weight: 300; margin-bottom: 5px;">00:00:00</div>
+        <div id="date" style="font-size: 0.7rem; color: #00f2ff; margin-bottom: 15px;">SUN, FEB 8</div>
+        <div class="diagnostic-item">
+          <span class="diag-label">UPTIME</span>
+          <span class="diag-value">10h</span>
+        </div>
+        <div class="diagnostic-item">
+          <span class="diag-label">COMMANDS</span>
+          <span class="diag-value">1</span>
+        </div>
+      </div>
+
+      <!-- BOTTOM CENTER -->
+      <div class="bottom-status">
+        <div class="greeting-text" id="greeting-text">Good Afternoon, Sir</div>
+        <div class="sub-greeting">MONITORING ALL SYSTEMS // MUSEPHIC ACTIVE</div>
+      </div>
+
+      <!-- SYSTEM LOG -->
+      <div class="hologram-panel system-log">
+        <div class="panel-title">CONSOLE // SYSTEM_LOG</div>
+        <div id="console" style="height: 60px; overflow-y: auto;">
+          <div class="log-entry"><span class="user-tag">SYSTEM</span> Neural Link Established.</div>
+        </div>
       </div>
     </div>
 
-    <!-- Content Studio Overlay -->
-    <div id="content-studio-overlay" style="display: none;">
-      <div class="studio-container glass-panel">
-        <div class="studio-header">
-          <h2>CONTENT STUDIO</h2>
-          <button id="close-studio-btn" class="close-btn">[ X ]</button>
-        </div>
-        <div class="studio-layout">
-          <div class="tool-grid">
-            <div class="category-header">CORE BUSINESS STRATEGY</div>
-            <div class="tool-card" data-tool="titan_architect" style="grid-column: 1 / -1; background: rgba(255, 204, 0, 0.1); border-color: var(--accent-gold);">
-              <div class="tool-icon">👑</div>
-              <h3 style="color: var(--accent-gold); font-size: 1rem;">TITAN GROWTH ARCHITECT</h3>
-              <p>8-Lens Elite Business Strategy (Cardone, Hormozi, Vee, etc.)</p>
-            </div>
-
-            <div class="category-header">CONTENT CREATION TASKS</div>
-            <div class="tool-card" data-tool="hook_generator">
-              <div class="tool-icon">🪝</div>
-              <h3>HOOK GENERATOR</h3>
-              <p>5 Hooks, One Click</p>
-            </div>
-            <div class="tool-card" data-tool="teleprompter">
-              <div class="tool-icon">📝</div>
-              <h3>TELEPROMPTER</h3>
-              <p>Script to Screen</p>
-            </div>
-            <div class="tool-card" data-tool="social_command_center" style="background: rgba(255, 0, 255, 0.1); border-color: #ff00ff;">
-              <div class="tool-icon">📱</div>
-              <h3>SOCIAL COMMAND</h3>
-              <p>Multi-Agent Viral Engine</p>
-            </div>
-            <div class="tool-card" data-tool="executive_os" style="background: rgba(255, 255, 255, 0.1); border-color: #fff;">
-              <div class="tool-icon">👔</div>
-              <h3>EXECUTIVE OS</h3>
-              <p>Lead Operations Architect</p>
-            </div>
-            <div class="tool-card" data-tool="yt_description">
-              <div class="tool-icon">▶️</div>
-              <h3>YOUTUBE DESCRIPTION</h3>
-              <p>Optimized for YouTube</p>
-            </div>
-            <div class="tool-card" data-tool="title_generator">
-              <div class="tool-icon">✨</div>
-              <h3>TITLE GENERATOR</h3>
-              <p>Click-Worthy Titles</p>
-            </div>
-            <div class="tool-card" data-tool="trending_topics">
-              <div class="tool-icon">🔥</div>
-              <h3>TRENDING TOPICS</h3>
-              <p>What's Hot Now</p>
-            </div>
-            <div class="tool-card" data-tool="slide_deck">
-              <div class="tool-icon">📊</div>
-              <h3>SLIDE DECK BUILDER</h3>
-              <p>One Prompt</p>
-            </div>
-            <div class="tool-card" data-tool="animated_website">
-              <div class="tool-icon">🌐</div>
-              <h3>ANIMATED WEBSITE</h3>
-              <p>Video to Site</p>
-            </div>
-            <div class="tool-card" data-tool="explainer_graphic">
-              <div class="tool-icon">🖼️</div>
-              <h3>EXPLAINER GRAPHIC</h3>
-              <p>Visual Breakdown</p>
-            </div>
-            <div class="tool-card" data-tool="visual_builder">
-              <div class="tool-icon">🏗️</div>
-              <h3>VISUAL PAGE BUILDER</h3>
-              <p>Any Concept</p>
-            </div>
-            <div class="tool-card" data-tool="blog_from_video">
-              <div class="tool-icon">✍️</div>
-              <h3>BLOG FROM VIDEO</h3>
-              <p>Transcript to Post</p>
-            </div>
-            <div class="tool-card" data-tool="social_repurposer">
-              <div class="tool-icon">🔄</div>
-              <h3>SOCIAL REPURPOSER</h3>
-              <p>1 Post, 5 Platforms</p>
-            </div>
-            <div class="tool-card" data-tool="video_to_newsletter">
-              <div class="tool-icon">📧</div>
-              <h3>VIDEO TO NEWSLETTER</h3>
-              <p>Video to Email</p>
-            </div>
-            <div class="tool-card" data-tool="course_module">
-              <div class="tool-icon">🎓</div>
-              <h3>COURSE MODULE</h3>
-              <p>Video to Lessons</p>
-            </div>
-            <div class="tool-card" data-tool="thumbnail_generator">
-              <div class="tool-icon">🖼️</div>
-              <h3>THUMBNAIL GENERATOR</h3>
-              <p>AI Thumbnails</p>
-            </div>
-            
-            <div class="category-header" style="margin-top: 15px;">WRITING & COMMUNICATION TASKS</div>
-            <div class="tool-card" data-tool="email_drafter">
-              <div class="tool-icon">✉️</div>
-              <h3>EMAIL DRAFTER</h3>
-              <p>Any Tone, Any Situation</p>
-            </div>
-            <div class="tool-card" data-tool="linkedin_post">
-              <div class="tool-icon">💼</div>
-              <h3>LINKEDIN POST</h3>
-              <p>Ideas to Engagement</p>
-            </div>
-            <div class="tool-card" data-tool="twitter_thread">
-              <div class="tool-icon">🐦</div>
-              <h3>TWITTER / X THREAD</h3>
-              <p>Viral Threads Fast</p>
-            </div>
-            <div class="tool-card" data-tool="blog_seo">
-              <div class="tool-icon">🔍</div>
-              <h3>BLOG SEO OPTIMIZER</h3>
-              <p>Rank Higher</p>
-            </div>
-            <div class="tool-card" data-tool="sales_page">
-              <div class="tool-icon">💰</div>
-              <h3>SALES PAGE WRITER</h3>
-              <p>High Converting Copy</p>
-            </div>
-            <div class="tool-card" data-tool="sop_writer">
-              <div class="tool-icon">📋</div>
-              <h3>SOP WRITER</h3>
-              <p>Document Any Process</p>
-            </div>
-            <div class="tool-card" data-tool="thank_you_note">
-              <div class="tool-icon">🙏</div>
-              <h3>THANK YOU NOTE</h3>
-              <p>Personal Touch</p>
-            </div>
-            <div class="tool-card" data-tool="proposal_generator">
-              <div class="tool-icon">📄</div>
-              <h3>PROPOSAL GENERATOR</h3>
-              <p>Win More Clients</p>
-            </div>
-            <div class="tool-card" data-tool="testimonial_outreach">
-              <div class="tool-icon">⭐</div>
-              <h3>TESTIMONIAL OUTREACH</h3>
-              <p>Ask The Right Way</p>
-            </div>
-            
-            <div class="category-header" style="margin-top: 15px;">FINANCE TASKS</div>
-            <div class="tool-card" data-tool="invoice_generator">
-              <div class="tool-icon">🧾</div>
-              <h3>INVOICE GENERATOR</h3>
-              <p>Branded PDF, 30 Secs</p>
-            </div>
-            <div class="tool-card" data-tool="receipt_scanner">
-              <div class="tool-icon">📸</div>
-              <h3>RECEIPT SCANNER</h3>
-              <p>Photo to Spreadsheet</p>
-            </div>
-            <div class="tool-card" data-tool="budget_planner">
-              <div class="tool-icon">📈</div>
-              <h3>BUDGET PLANNER</h3>
-              <p>See Where Money Goes</p>
-            </div>
-            <div class="tool-card" data-tool="sow_generator">
-              <div class="tool-icon">🤝</div>
-              <h3>SOW GENERATOR</h3>
-              <p>Scope Locked Down</p>
-            </div>
-            <div class="tool-card" data-tool="case_study_writer">
-              <div class="tool-icon">🏆</div>
-              <h3>CASE STUDY WRITER</h3>
-              <p>Wins to Proof</p>
-            </div>
-            <div class="tool-card" data-tool="contract_reviewer">
-              <div class="tool-icon">⚖️</div>
-              <h3>CONTRACT REVIEWER</h3>
-              <p>Red Flags Caught</p>
-            </div>
-
-            <div class="category-header" style="margin-top: 15px;">RESEARCH TASKS</div>
-            <div class="tool-card" data-tool="quick_research">
-              <div class="tool-icon">⏱️</div>
-              <h3>QUICK RESEARCH</h3>
-              <p>TLDR On Anything</p>
-            </div>
-            <div class="tool-card" data-tool="resource_hunter">
-              <div class="tool-icon">🏹</div>
-              <h3>RESOURCE HUNTER</h3>
-              <p>Free Tools + Deals</p>
-            </div>
-            <div class="tool-card" data-tool="book_summary">
-              <div class="tool-icon">📚</div>
-              <h3>BOOK SUMMARY</h3>
-              <p>Key Ideas, Fast</p>
-            </div>
-            
-            <div class="category-header" style="margin-top: 15px;">PRODUCTIVITY & PLANNING TASKS</div>
-            <div class="tool-card" data-tool="morning_briefing">
-              <div class="tool-icon">🌅</div>
-              <h3>MORNING BRIEFING</h3>
-              <p>Daily Dashboard at 7AM</p>
-            </div>
-            <div class="tool-card" data-tool="weekly_planner">
-              <div class="tool-icon">📅</div>
-              <h3>WEEKLY PLANNER</h3>
-              <p>Priorities + Time Blocks</p>
-            </div>
-            <div class="tool-card" data-tool="eod_summary">
-              <div class="tool-icon">🌇</div>
-              <h3>END OF DAY SUMMARY</h3>
-              <p>Auto Daily Review</p>
-            </div>
-            <div class="tool-card" data-tool="weekly_audit">
-              <div class="tool-icon">🩺</div>
-              <h3>WEEKLY AUDIT</h3>
-              <p>System Health Check</p>
-            </div>
-            <div class="tool-card" data-tool="inbox_sweep">
-              <div class="tool-icon">🧹</div>
-              <h3>INBOX SWEEP</h3>
-              <p>Triage + Draft Replies</p>
-            </div>
-            <div class="tool-card" data-tool="slack_catchup">
-              <div class="tool-icon">💬</div>
-              <h3>SLACK CATCHUP</h3>
-              <p>Missed Messages Summary</p>
-            </div>
-            <div class="tool-card" data-tool="meeting_prep">
-              <div class="tool-icon">👔</div>
-              <h3>MEETING PREPARATION</h3>
-              <p>Briefed Before Every Call</p>
-            </div>
-            
-            <div class="category-header" style="margin-top: 15px;">LEARN & BUILD TASKS</div>
-            <div class="tool-card" data-tool="learning_path">
-              <div class="tool-icon">🧠</div>
-              <h3>LEARNING PATH</h3>
-              <p>Structured Curriculum</p>
-            </div>
-            <div class="tool-card" data-tool="decision_matrix">
-              <div class="tool-icon">⚖️</div>
-              <h3>DECISION MATRIX</h3>
-              <p>Weighted Scoring</p>
-            </div>
-            <div class="tool-card" data-tool="conversation_prep">
-              <div class="tool-icon">🗣️</div>
-              <h3>CONVERSATION PREP</h3>
-              <p>Tough Talks Ready</p>
-            </div>
-            <div class="tool-card" data-tool="travel_planner">
-              <div class="tool-icon">✈️</div>
-              <h3>TRAVEL PLANNER</h3>
-              <p>Full Itinerary</p>
-            </div>
-            <div class="tool-card" data-tool="goal_tracker">
-              <div class="tool-icon">🎯</div>
-              <h3>GOAL TRACKER</h3>
-              <p>Track Your Progress</p>
-            </div>
-            <div class="tool-card" data-tool="habit_tracker">
-              <div class="tool-icon">🔄</div>
-              <h3>HABIT TRACKER</h3>
-              <p>Streaks + Accountability</p>
-            </div>
-
-            <div class="category-header" style="margin-top: 15px;">SETUP & SYSTEM TASKS</div>
-            <div class="tool-card" data-tool="skill_creator">
-              <div class="tool-icon">🛠️</div>
-              <h3>SKILL CREATOR</h3>
-              <p>Build My Own Skills</p>
-            </div>
-            <div class="tool-card" data-tool="customize_skill">
-              <div class="tool-icon">⚙️</div>
-              <h3>CUSTOMIZE</h3>
-              <p>Any Skill To Me</p>
-            </div>
-            <div class="tool-card" data-tool="data_vault" style="background: rgba(0, 210, 255, 0.1); border-color: var(--accent-blue);">
-              <div class="tool-icon">💾</div>
-              <h3>DATA VAULT</h3>
-              <p>Backup & Sync State</p>
-            </div>
-            <div class="tool-card" data-tool="diagram_generator">
-              <div class="tool-icon">📊</div>
-              <h3>DIAGRAM GENERATOR</h3>
-              <p>Visual Diagrams</p>
-            </div>
-            <div class="tool-card" data-tool="workflow_visualizer">
-              <div class="tool-icon">🗺️</div>
-              <h3>WORKFLOW VISUALIZER</h3>
-              <p>Map My Own System</p>
-            </div>
-          </div>
-          <div class="studio-preview">
-            <div class="panel-header">OUTPUT PREVIEW</div>
-            
-            <div id="studio-input-area" style="display: none; flex-direction: column; gap: 15px; margin-bottom: 20px;">
-              <div style="font-size: 0.85rem; color: var(--accent-blue); font-weight: 600;" id="active-tool-label">SELECTED TOOL</div>
-              <textarea id="user-prompt-input" placeholder="Type your context, instructions, or data here..." style="width: 100%; height: 120px; background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: #fff; padding: 15px; font-family: var(--font-main); resize: none;"></textarea>
-              <button id="execute-tool-btn" class="primary-action-btn" style="background: var(--accent-blue) !important; color: #000 !important;">EXECUTE TASK</button>
-            </div>
-
-            <div id="studio-output-area" class="output-area" style="white-space: pre-wrap; flex-grow: 1; overflow-y: auto;">
-              SELECT A TOOL TO BEGIN
-            </div>
-
-            <div id="studio-utilities" style="display: none; gap: 10px; margin-top: 20px;">
-              <button id="copy-btn" class="icon-btn" style="flex: 1;">📋 COPY</button>
-              <button id="download-btn" class="icon-btn" style="flex: 1;">💾 SAVE TXT</button>
-            </div>
-          </div>
-        </div>
-      </div>
+    <!-- CONTENT STUDIO (Floating Overlay) -->
+    <div id="content-studio-overlay" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; width: 80%; height: 80%;">
+       <div class="hologram-panel" style="width: 100%; height: 100%; overflow-y: auto;">
+         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+           <h2 style="font-family: 'Syncopate'; color: #00f2ff;">CREATOR STUDIO</h2>
+           <button id="close-studio-btn" style="background: none; border: 1px solid #ff0055; color: #ff0055; cursor: pointer;">[X]</button>
+         </div>
+         <div id="studio-output-area" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(0,242,255,0.1); padding: 20px; border-radius: 10px; min-height: 200px; margin-bottom: 20px;">
+           Awaiting instruction...
+         </div>
+         <div style="display: flex; gap: 10px;">
+           <input type="text" id="user-prompt-input" placeholder="Enter directive..." style="flex: 1; background: rgba(0,0,0,0.5); border: 1px solid #00f2ff; color: #fff; padding: 15px; border-radius: 5px;">
+           <button id="execute-task-btn" style="background: #00f2ff; color: #000; font-weight: bold; padding: 0 30px; border: none; border-radius: 5px; cursor: pointer;">EXECUTE</button>
+         </div>
+         <div id="tool-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-top: 30px;">
+            <!-- Tools populated by main.js logic -->
+         </div>
+       </div>
     </div>
-  </div>
 
-  <script type="module" src="/src/main.js"></script>
-</body>
+    <script type="module" src="/src/main.js"></script>
+  </body>
 </html>

@@ -1,6 +1,48 @@
 import './style.css'
 
 /**
+ * VISUALS: STARFIELD BACKGROUND
+ */
+function initStarfield() {
+  const canvas = document.getElementById('starfield');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let stars = [];
+  
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  
+  window.addEventListener('resize', resize);
+  resize();
+  
+  for (let i = 0; i < 200; i++) {
+    stars.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      size: Math.random() * 1.5,
+      speed: Math.random() * 0.5
+    });
+  }
+  
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = '#fff';
+    stars.forEach(star => {
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+      ctx.fill();
+      star.y += star.speed;
+      if (star.y > canvas.height) star.y = 0;
+    });
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+
+/**
  * CORE NEURAL LINK: RETRIEVE API KEY
  */
 function getApiKey() {
@@ -23,38 +65,6 @@ let todoList = [];
  * INITIALIZATION PROTOCOL
  */
 function init() {
-  // Initialize Draggable UI
-  document.querySelectorAll('.bento-box').forEach(makeDraggable);
-  const avatar = document.querySelector('.sentinel-avatar');
-  if (avatar) makeDraggable(avatar);
-
-  
-
-  
-
-  // Bind UI Elements
-  clockEl = document.getElementById('clock');
-  dateEl = document.getElementById('date');
-  consoleEl = document.getElementById('console');
-  heartEl = document.getElementById('core-heart');
-  waveformEl = document.getElementById('waveform');
-  micStatusEl = document.getElementById('mic-status');
-  talkBtn = document.getElementById('talk-btn');
-  historyToggle = document.getElementById('history-toggle');
-  historyPanel = document.getElementById('history-panel');
-
-  // Verify Critical Elements
-  if (!clockEl || !consoleEl || !heartEl) {
-    console.error("CRITICAL ERROR: Essential HUD elements missing. Retrying in 1s...");
-    setTimeout(init, 1000);
-    return;
-  }
-
-  // Setup Timers & Static UI
-  updateTime();
-  setInterval(updateTime, 1000);
-  setupWaveform();
-  
   const overlay = document.getElementById('init-overlay');
   const app = document.getElementById('app');
   const initBtn = document.getElementById('init-btn');
@@ -65,17 +75,36 @@ function init() {
     overlay.style.opacity = '0';
     setTimeout(() => {
       overlay.style.display = 'none';
-      app.style.display = 'grid';
+      app.style.display = 'block';
       window.speechSynthesis.resume();
-      speak("నమస్కారం సార్. మ్యూస్ ఆన్లైన్లో ఉంది.");
+      speak("Welcome back, Sir. Musephic is online.");
       startListening();
     }, 500);
     
-    logToConsole('MUSEPHIC OS v7.0.0 (Bento 3D) loaded.', 'system');
-    logToConsole('Neural link established via Strategic Bridge.', 'system');
+    logToConsole('MUSEPHIC OS v7.0.0 (Holographic) loaded.', 'system');
   };
 
   if (initBtn) initBtn.addEventListener('click', startApp);
+
+  // Bind UI Elements
+  clockEl = document.getElementById('clock');
+  dateEl = document.getElementById('date');
+  consoleEl = document.getElementById('console');
+  talkBtn = document.getElementById('talk-btn');
+
+  // Verify Critical Elements
+  if (!clockEl || !consoleEl) {
+    console.warn("HUD sync in progress...");
+    setTimeout(init, 1000);
+    return;
+  }
+
+  // Setup Timers & Static UI
+  updateTime();
+  setInterval(updateTime, 1000);
+  setupWaveform();
+  
+
   overlay?.addEventListener('click', (e) => {
     if (e.target === overlay) startApp();
   });
@@ -299,6 +328,7 @@ function logToConsole(message, type = 'system') {
 
 function setupWaveform() {
   if (!waveformEl) return;
+  if (!waveformEl) return;
   waveformEl.innerHTML = '';
   for (let i = 0; i < 20; i++) {
     const bar = document.createElement('div');
@@ -330,7 +360,7 @@ function speak(text) {
   window.speechSynthesis.resume();
   
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = 'te-IN';
+  utterance.lang = 'en-US';
   
   const setVoice = () => {
     const voices = window.speechSynthesis.getVoices();
@@ -367,7 +397,7 @@ let recognition;
 if (Recognition) {
   recognition = new Recognition();
   recognition.continuous = true;
-  recognition.lang = 'te-IN';
+  recognition.lang = 'en-US';
   recognition.interimResults = true;
 
   let lastProcessed = '';
@@ -518,11 +548,11 @@ function triggerContentTool(toolName) {
   if (inputArea) inputArea.style.display = 'flex';
   if (activeLabel) activeLabel.textContent = `SELECTED TOOL: ${toolName}`;
   if (userInput) userInput.value = '';
-  if (outputArea) outputArea.innerHTML = 'Awaiting your instructions...';
+  if (outputArea)     speak(resultText.substring(0, 300)); // Speak first part of AI response\n    outputArea.innerHTML = 'Awaiting your instructions...';
   if (utilities) utilities.style.display = 'none';
 
   if (toolName === 'data_vault') {
-    outputArea.innerHTML = `
+        speak(resultText.substring(0, 300)); // Speak first part of AI response\n    outputArea.innerHTML = `
       <div style="text-align: center; padding: 20px;">
         <h2 style="color: var(--accent-blue); margin-bottom: 20px;">SYSTEM DATA VAULT</h2>
         <p style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 30px;">
@@ -575,7 +605,7 @@ function formatMarkdown(text) {
 async function executeToolTask() {
   const outputArea = document.getElementById('studio-output-area');
   const originalContent = outputArea.innerHTML;
-  outputArea.innerHTML = `<div class="thinking-loader" style="color: var(--accent-blue); font-style: italic;">Neural Link active... Processing multi-agent request...</div>`;
+      speak(resultText.substring(0, 300)); // Speak first part of AI response\n    outputArea.innerHTML = `<div class="thinking-loader" style="color: var(--accent-blue); font-style: italic;">Neural Link active... Processing multi-agent request...</div>`;
   logToConsole("SYSTEM: Processing neural request...", 'system');
 
   const apiKey = getApiKey();
@@ -594,7 +624,7 @@ async function executeToolTask() {
   outputArea = document.getElementById('studio-output-area');
   const utilities = document.getElementById('studio-utilities');
   
-  outputArea.innerHTML = `<div class="generating-pulse">PROCESSING<br>THROUGH NEURAL LINK...</div>`;
+      speak(resultText.substring(0, 300)); // Speak first part of AI response\n    outputArea.innerHTML = `<div class="generating-pulse">PROCESSING<br>THROUGH NEURAL LINK...</div>`;
   if (utilities) utilities.style.display = 'none';
   
   speak("Executing task.");
@@ -660,7 +690,7 @@ Provide a "Titan Execution Roadmap" broken down by these eight perspectives. Use
       .replace(/\*(.*?)\*/g, '<em>$1</em>')
       .replace(/\n/g, '<br>');
 
-    outputArea.innerHTML = `<div style="padding: 10px; border-left: 3px solid var(--accent-blue);">
+        speak(resultText.substring(0, 300)); // Speak first part of AI response\n    outputArea.innerHTML = `<div style="padding: 10px; border-left: 3px solid var(--accent-blue);">
       <h4 style="color: var(--accent-blue); margin-bottom: 15px; font-family: var(--font-display); letter-spacing: 2px;">${currentToolName} OUTPUT</h4>
       ${formattedHTML}
     </div>`;
@@ -689,7 +719,7 @@ Provide a "Titan Execution Roadmap" broken down by these eight perspectives. Use
       }
     }
 
-    outputArea.innerHTML = `<div style="color: red; padding: 10px; border-left: 3px solid red;">
+        speak(resultText.substring(0, 300)); // Speak first part of AI response\n    outputArea.innerHTML = `<div style="color: red; padding: 10px; border-left: 3px solid red;">
       <strong>API ERROR:</strong><br>${errorMsg}
     </div>`;
     speak("I encountered an error connecting to the neural network.");
@@ -1050,3 +1080,6 @@ async function importState(input) {
 // Attach to window for onclick handlers
 window.exportState = exportState;
 window.importState = importState;
+
+// BOOTSTRAP OS
+init();
