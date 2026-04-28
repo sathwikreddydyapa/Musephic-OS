@@ -1,3 +1,11 @@
+
+/**
+ * CORE NEURAL LINK: RETRIEVE API KEY
+ */
+function getApiKey() {
+  const stored = getApiKey();
+  return stored || "AIzaSyBqsbgoTBT5j1pgyrVYNYfVtnarH2JSTAQ";
+}
 import './style.css'
 
 // Constants
@@ -15,23 +23,9 @@ let todoList = [];
  * INITIALIZATION PROTOCOL
  */
 function init() {
-  // Neural Link Auto-Check
-  const apiKey = localStorage.getItem('gemini_api_key');
-  if (!apiKey) {
-    document.getElementById('neural-link-modal').style.display = 'flex';
-  }
+  
 
-  document.getElementById('save-api-key-btn')?.addEventListener('click', () => {
-    const key = document.getElementById('api-key-input').value.trim();
-    if (key) {
-      localStorage.setItem('gemini_api_key', key);
-      document.getElementById('neural-link-modal').style.display = 'none';
-      speak("Neural Link established, Sir.");
-      logToConsole("SYSTEM: Gemini Neural Link successfully established.", 'system');
-      // Refresh advice if needed
-      if (expenses.length > 0) analyzeFinances();
-    }
-  });
+  
 
   // Bind UI Elements
   clockEl = document.getElementById('clock');
@@ -574,7 +568,7 @@ function formatMarkdown(text) {
 }
 
 async function executeToolTask() {
-  const apiKey = localStorage.getItem('gemini_api_key');
+  const apiKey = getApiKey();
   if (!apiKey) {
     speak("Sir, the API key is missing.");
     alert("API Key not found in local storage. Please contact administrator to re-insert the Gemini API key.");
@@ -775,7 +769,7 @@ async function generateAISchedule() {
   const container = document.getElementById('ai-schedule-container');
   if (!container) return;
   
-  const apiKey = localStorage.getItem('gemini_api_key');
+  const apiKey = getApiKey();
   if (!apiKey) {
     speak("Sir, the API key is missing. Cannot generate schedule.");
     alert("API Key not found in local storage.");
@@ -935,7 +929,7 @@ async function analyzeFinances() {
   
   clearTimeout(analyzeTimeout);
   
-  const apiKey = localStorage.getItem('gemini_api_key');
+  const apiKey = getApiKey();
   if (!apiKey) return;
   
   adviceEl.innerHTML = '<span class="generating-pulse">ANALYZING...</span>';
@@ -979,7 +973,7 @@ Provide exactly ONE short sentence (max 15 words) of sharp, actionable financial
  */
 function exportState() {
   const state = {
-    gemini_api_key: localStorage.getItem('gemini_api_key'),
+    gemini_api_key: getApiKey(),
     musephic_todos: localStorage.getItem('musephic_todos'),
     musephic_finances: localStorage.getItem('musephic_finances'),
     timestamp: new Date().toISOString(),
