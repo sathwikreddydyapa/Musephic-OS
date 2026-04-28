@@ -1,12 +1,12 @@
+import './style.css'
 
 /**
  * CORE NEURAL LINK: RETRIEVE API KEY
  */
 function getApiKey() {
-  const stored = getApiKey();
+  const stored = localStorage.getItem('gemini_api_key');
   return stored || "AIzaSyBqsbgoTBT5j1pgyrVYNYfVtnarH2JSTAQ";
 }
-import './style.css'
 
 // Constants
 const VOICES = {
