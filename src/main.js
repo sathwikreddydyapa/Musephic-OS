@@ -1,4 +1,5 @@
-import './style.css'\n
+import './style.css'
+
 /**
  * VISUALS: STARFIELD BACKGROUND
  */
