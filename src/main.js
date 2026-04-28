@@ -620,20 +620,21 @@ Provide a "Titan Execution Roadmap" broken down by these eight perspectives. Use
   }
 
   try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`, {
+    
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      signal: controller.signal,
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [{
-          parts: [{ text: promptText }]
-        }],
-        generationConfig: {
-          temperature: 0.7,
-        }
+        contents: [{ parts: [{ text: promptText }] }],
+        generationConfig: { temperature: 0.7 }
       })
     });
+    clearTimeout(timeoutId);
+
 
     const data = await response.json();
     
@@ -807,14 +808,21 @@ Format your response EXACTLY as a series of HTML divs using the following struct
 Do not output ANY markdown wrappers, backticks, or extra text. ONLY output the raw HTML blocks.`;
 
   try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`, {
+    
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
       method: 'POST',
+      signal: controller.signal,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ parts: [{ text: promptText }] }],
         generationConfig: { temperature: 0.7 }
       })
     });
+    clearTimeout(timeoutId);
+
 
     const data = await response.json();
     if (data.error) throw new Error(data.error.message);
@@ -951,14 +959,21 @@ My recent entries: ${recent}.
 Provide exactly ONE short sentence (max 15 words) of sharp, actionable financial advice or observation based on these numbers. No pleasantries. No markdown.`;
 
     try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: promptText }] }],
-          generationConfig: { temperature: 0.4 }
-        })
-      });
+      
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      signal: controller.signal,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: promptText }] }],
+        generationConfig: { temperature: 0.7 }
+      })
+    });
+    clearTimeout(timeoutId);
+
       
       const data = await response.json();
       if (data.error) throw new Error(data.error.message);
