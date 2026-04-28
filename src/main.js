@@ -64,7 +64,27 @@ let todoList = [];
 /**
  * INITIALIZATION PROTOCOL
  */
-function init() {
+function init() {\n  const overlay = document.getElementById('init-overlay');
+  const app = document.getElementById('app');
+  const initBtn = document.getElementById('init-btn');
+  
+  // App Startup Sequence
+  const startApp = () => {
+    if (!overlay || !app) return;
+    overlay.style.opacity = '0';
+    setTimeout(() => {
+      overlay.style.display = 'none';
+      app.style.display = 'grid';
+      window.speechSynthesis.resume();
+      speak("నమస్కారం సార్. మ్యూస్ ఆన్లైన్లో ఉంది.");
+      startListening();
+    }, 500);
+    
+    logToConsole('MUSEPHIC OS v7.0.0 (Bento 3D) loaded.', 'system');
+    logToConsole('Neural link established via Strategic Bridge.', 'system');
+  };
+
+  if (initBtn) initBtn.addEventListener('click', startApp);\n
   // Initialize Draggable UI
   document.querySelectorAll('.bento-box').forEach(makeDraggable);
   const avatar = document.querySelector('.sentinel-avatar');
@@ -88,7 +108,7 @@ function init() {
   // Verify Critical Elements
   if (!clockEl || !consoleEl || !heartEl) {
     console.error("CRITICAL ERROR: Essential HUD elements missing. Retrying in 1s...");
-    setTimeout(init, 1000);
+    console.warn('Retrying init...'); setTimeout(init, 1000);
     return;
   }
 
@@ -97,27 +117,7 @@ function init() {
   setInterval(updateTime, 1000);
   setupWaveform();
   
-  const overlay = document.getElementById('init-overlay');
-  const app = document.getElementById('app');
-  const initBtn = document.getElementById('init-btn');
-  
-  // App Startup Sequence
-  const startApp = () => {
-    if (!overlay || !app) return;
-    overlay.style.opacity = '0';
-    setTimeout(() => {
-      overlay.style.display = 'none';
-      app.style.display = 'grid';
-      window.speechSynthesis.resume();
-      speak("నమస్కారం సార్. మ్యూస్ ఆన్లైన్లో ఉంది.");
-      startListening();
-    }, 500);
-    
-    logToConsole('MUSEPHIC OS v7.0.0 (Bento 3D) loaded.', 'system');
-    logToConsole('Neural link established via Strategic Bridge.', 'system');
-  };
 
-  if (initBtn) initBtn.addEventListener('click', startApp);
   overlay?.addEventListener('click', (e) => {
     if (e.target === overlay) startApp();
   });
