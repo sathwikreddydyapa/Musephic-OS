@@ -5,8 +5,21 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Musephic OS | Sentinel Edition</title>
+    <style>
+      #starfield {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        pointer-events: none;
+        background: #020617;
+      }
+    </style>
   </head>
   <body>
+    <canvas id="starfield"></canvas>
     
     <!-- Sentinel HUD (Pseudo-Lock) -->
   <div id="sentinel-overlay" style="display: none;">
@@ -58,6 +71,25 @@
               </div>
               <div style="font-size: 1.5rem; font-weight: 300;">34.2% <span style="font-size: 0.7rem; color: #00ff88; font-weight:600;">OPTIMAL</span></div>
             </div>
+          </aside>
+
+          <aside class="glass-panel bento-box" id="system-status-panel">
+            <div class="panel-header">DIAGNOSTICS</div>
+            <div class="diagnostic-grid">
+              <div class="diag-item">
+                <span class="diag-label">NEURAL</span>
+                <span id="status-api" class="diag-value" style="color: #00d2ff;">SECURE</span>
+              </div>
+              <div class="diag-item">
+                <span class="diag-label">MIC</span>
+                <span id="status-mic" class="diag-value" style="color: #ff00ff;">READY</span>
+              </div>
+              <div class="diag-item">
+                <span class="diag-label">POWER</span>
+                <span id="status-battery" class="diag-value">---%</span>
+              </div>
+            </div>
+            <div id="status-loc" style="margin-top: 10px; font-size: 0.6rem; color: var(--text-dim);">LOCATING...</div>
           </aside>
 
           <aside class="glass-panel panel-finance bento-box">
