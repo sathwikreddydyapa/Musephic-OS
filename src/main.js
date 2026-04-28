@@ -586,7 +586,7 @@ async function executeToolTask() {
     return;
   }
 
-  const outputArea = document.getElementById('studio-output-area');
+  outputArea = document.getElementById('studio-output-area');
   const utilities = document.getElementById('studio-utilities');
   
   outputArea.innerHTML = `<div class="generating-pulse">PROCESSING<br>THROUGH NEURAL LINK...</div>`;
