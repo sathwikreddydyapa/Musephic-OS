@@ -23,6 +23,11 @@ let todoList = [];
  * INITIALIZATION PROTOCOL
  */
 function init() {
+  // Initialize Draggable UI
+  document.querySelectorAll('.bento-box').forEach(makeDraggable);
+  const avatar = document.querySelector('.sentinel-avatar');
+  if (avatar) makeDraggable(avatar);
+
   
 
   
