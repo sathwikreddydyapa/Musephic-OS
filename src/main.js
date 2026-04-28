@@ -546,13 +546,8 @@ function formatMarkdown(text) {
   return html;
 }
 
-async function getApiKey() {
-  const stored = localStorage.getItem('gemini_api_key');
-  return stored || "AIzaSyBqsbgoTBT5j1pgyrVYNYfVtnarH2JSTAQ";
-}
-
 async function executeToolTask() {
-  const apiKey = await getApiKey();
+  const apiKey = localStorage.getItem('gemini_api_key');
   if (!apiKey) {
     speak("Sir, the API key is missing.");
     alert("API Key not found in local storage. Please contact administrator to re-insert the Gemini API key.");
@@ -599,20 +594,20 @@ Provide a "Titan Execution Roadmap" broken down by these eight perspectives. Use
   }
 
   try {
-    
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000);
-    
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`, {
       method: 'POST',
-      signal: controller.signal,
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: promptText }] }]
+        contents: [{
+          parts: [{ text: promptText }]
+        }],
+        generationConfig: {
+          temperature: 0.7,
+        }
       })
     });
-    clearTimeout(timeoutId);
-
 
     const data = await response.json();
     
@@ -786,20 +781,14 @@ Format your response EXACTLY as a series of HTML divs using the following struct
 Do not output ANY markdown wrappers, backticks, or extra text. ONLY output the raw HTML blocks.`;
 
   try {
-    
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000);
-    
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`, {
       method: 'POST',
-      signal: controller.signal,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: promptText }] }]
+        contents: [{ parts: [{ text: promptText }] }],
+        generationConfig: { temperature: 0.7 }
       })
     });
-    clearTimeout(timeoutId);
-
 
     const data = await response.json();
     if (data.error) throw new Error(data.error.message);
@@ -936,20 +925,14 @@ My recent entries: ${recent}.
 Provide exactly ONE short sentence (max 15 words) of sharp, actionable financial advice or observation based on these numbers. No pleasantries. No markdown.`;
 
     try {
-      
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000);
-    
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      signal: controller.signal,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: promptText }] }]
-      })
-    });
-    clearTimeout(timeoutId);
-
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: promptText }] }],
+          generationConfig: { temperature: 0.4 }
+        })
+      });
       
       const data = await response.json();
       if (data.error) throw new Error(data.error.message);
@@ -962,4 +945,3 @@ Provide exactly ONE short sentence (max 15 words) of sharp, actionable financial
     }
   }, 2000);
 }
-\n\n// BOOTSTRAP\ninit();
