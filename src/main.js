@@ -1,5 +1,13 @@
 import './style.css'
 
+/**
+ * CORE NEURAL LINK: RETRIEVE API KEY
+ */
+function getApiKey() {
+  const stored = localStorage.getItem('gemini_api_key');
+  return stored || "AIzaSyBqsbgoTBT5j1pgyrVYNYfVtnarH2JSTAQ";
+}
+
 // Constants
 const VOICES = {
   assistant: { lang: 'en-GB', name: 'Google UK English Male' } 
@@ -15,23 +23,14 @@ let todoList = [];
  * INITIALIZATION PROTOCOL
  */
 function init() {
-  // Neural Link Auto-Check
-  const apiKey = localStorage.getItem('gemini_api_key');
-  if (!apiKey) {
-    document.getElementById('neural-link-modal').style.display = 'flex';
-  }
+  // Initialize Draggable UI
+  document.querySelectorAll('.bento-box').forEach(makeDraggable);
+  const avatar = document.querySelector('.sentinel-avatar');
+  if (avatar) makeDraggable(avatar);
 
-  document.getElementById('save-api-key-btn')?.addEventListener('click', () => {
-    const key = document.getElementById('api-key-input').value.trim();
-    if (key) {
-      localStorage.setItem('gemini_api_key', key);
-      document.getElementById('neural-link-modal').style.display = 'none';
-      speak("Neural Link established, Sir.");
-      logToConsole("SYSTEM: Gemini Neural Link successfully established.", 'system');
-      // Refresh advice if needed
-      if (expenses.length > 0) analyzeFinances();
-    }
-  });
+  
+
+  
 
   // Bind UI Elements
   clockEl = document.getElementById('clock');
@@ -522,6 +521,33 @@ function triggerContentTool(toolName) {
   if (outputArea) outputArea.innerHTML = 'Awaiting your instructions...';
   if (utilities) utilities.style.display = 'none';
 
+  if (toolName === 'data_vault') {
+    outputArea.innerHTML = `
+      <div style="text-align: center; padding: 20px;">
+        <h2 style="color: var(--accent-blue); margin-bottom: 20px;">SYSTEM DATA VAULT</h2>
+        <p style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 30px;">
+          Export your entire OS state (To-Dos, Finances, API Key) to migrate between your local dev environment and your live Render deployment.
+        </p>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <button onclick="exportState()" class="primary-action-btn" style="background: rgba(0,210,255,0.2) !important;">
+            <div style="font-size: 1.5rem; margin-bottom: 10px;">📤</div>
+            BACKUP BRAIN (.MUSE)
+          </button>
+          
+          <div style="position: relative;">
+            <button onclick="document.getElementById('import-file').click()" class="primary-action-btn" style="background: rgba(255,204,0,0.1) !important; color: var(--accent-gold) !important; width: 100%;">
+              <div style="font-size: 1.5rem; margin-bottom: 10px;">📥</div>
+              RESTORE BRAIN
+            </button>
+            <input type="file" id="import-file" style="display: none;" onchange="importState(this)">
+          </div>
+        </div>
+      </div>
+    `;
+    if (inputArea) inputArea.style.display = 'none';
+  }
+
   const isTe = recognition && recognition.lang === 'te-IN';
   speak(isTe ? `${toolName} సిద్ధంగా ఉంది.` : `${toolName} ready. Please provide context.`);
   logToConsole(`CONTENT STUDIO: Loaded ${toolName} interface.`, 'system');
@@ -547,7 +573,12 @@ function formatMarkdown(text) {
 }
 
 async function executeToolTask() {
-  const apiKey = localStorage.getItem('gemini_api_key');
+  const outputArea = document.getElementById('studio-output-area');
+  const originalContent = outputArea.innerHTML;
+  outputArea.innerHTML = `<div class="thinking-loader" style="color: var(--accent-blue); font-style: italic;">Neural Link active... Processing multi-agent request...</div>`;
+  logToConsole("SYSTEM: Processing neural request...", 'system');
+
+  const apiKey = getApiKey();
   if (!apiKey) {
     speak("Sir, the API key is missing.");
     alert("API Key not found in local storage. Please contact administrator to re-insert the Gemini API key.");
@@ -560,7 +591,7 @@ async function executeToolTask() {
     return;
   }
 
-  const outputArea = document.getElementById('studio-output-area');
+  outputArea = document.getElementById('studio-output-area');
   const utilities = document.getElementById('studio-utilities');
   
   outputArea.innerHTML = `<div class="generating-pulse">PROCESSING<br>THROUGH NEURAL LINK...</div>`;
@@ -568,7 +599,13 @@ async function executeToolTask() {
   
   speak("Executing task.");
 
-  let promptText = `You are Musephic, an elite 24/7 autonomous AI assistant running inside a futuristic OS. 
+  let promptText = `
+You are Musephic, an elite 24/7 autonomous AI assistant.
+CAPABILITIES:
+- You can LAUNCH local applications (e.g., CapCut, Chrome). To do so, include [LAUNCH: AppName] in your response.
+- You can NAVIGATE to websites. To do so, include [NAVIGATE: url1, url2] in your response.
+- Format all business strategy beautifully in Markdown.
+ 
 The user wants to use the tool: "${currentToolName}".
 User Instructions/Context: "${userInput || 'Execute default automated routine for this tool.'}"
 
@@ -594,20 +631,21 @@ Provide a "Titan Execution Roadmap" broken down by these eight perspectives. Use
   }
 
   try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`, {
+    
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      signal: controller.signal,
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [{
-          parts: [{ text: promptText }]
-        }],
-        generationConfig: {
-          temperature: 0.7,
-        }
+        contents: [{ parts: [{ text: promptText }] }],
+        generationConfig: { temperature: 0.7 }
       })
     });
+    clearTimeout(timeoutId);
+
 
     const data = await response.json();
     
@@ -748,7 +786,7 @@ async function generateAISchedule() {
   const container = document.getElementById('ai-schedule-container');
   if (!container) return;
   
-  const apiKey = localStorage.getItem('gemini_api_key');
+  const apiKey = getApiKey();
   if (!apiKey) {
     speak("Sir, the API key is missing. Cannot generate schedule.");
     alert("API Key not found in local storage.");
@@ -781,14 +819,21 @@ Format your response EXACTLY as a series of HTML divs using the following struct
 Do not output ANY markdown wrappers, backticks, or extra text. ONLY output the raw HTML blocks.`;
 
   try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`, {
+    
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
       method: 'POST',
+      signal: controller.signal,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ parts: [{ text: promptText }] }],
         generationConfig: { temperature: 0.7 }
       })
     });
+    clearTimeout(timeoutId);
+
 
     const data = await response.json();
     if (data.error) throw new Error(data.error.message);
@@ -908,7 +953,7 @@ async function analyzeFinances() {
   
   clearTimeout(analyzeTimeout);
   
-  const apiKey = localStorage.getItem('gemini_api_key');
+  const apiKey = getApiKey();
   if (!apiKey) return;
   
   adviceEl.innerHTML = '<span class="generating-pulse">ANALYZING...</span>';
@@ -925,14 +970,21 @@ My recent entries: ${recent}.
 Provide exactly ONE short sentence (max 15 words) of sharp, actionable financial advice or observation based on these numbers. No pleasantries. No markdown.`;
 
     try {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: promptText }] }],
-          generationConfig: { temperature: 0.4 }
-        })
-      });
+      
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      signal: controller.signal,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: promptText }] }],
+        generationConfig: { temperature: 0.7 }
+      })
+    });
+    clearTimeout(timeoutId);
+
       
       const data = await response.json();
       if (data.error) throw new Error(data.error.message);
@@ -945,3 +997,56 @@ Provide exactly ONE short sentence (max 15 words) of sharp, actionable financial
     }
   }, 2000);
 }
+
+
+/**
+ * DATA VAULT LOGIC (STATE MIGRATION)
+ */
+function exportState() {
+  const state = {
+    gemini_api_key: getApiKey(),
+    musephic_todos: localStorage.getItem('musephic_todos'),
+    musephic_finances: localStorage.getItem('musephic_finances'),
+    timestamp: new Date().toISOString(),
+    version: "1.0.0"
+  };
+  
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `musephic_brain_${new Date().toISOString().split('T')[0]}.muse`;
+  a.click();
+  URL.revokeObjectURL(url);
+  speak("Brain backup successful, Sir. Download complete.");
+}
+
+async function importState(input) {
+  const file = input.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const state = JSON.parse(e.target.result);
+      if (!state.version) throw new Error("Invalid brain file format.");
+      
+      if (confirm("Sir, this will overwrite your current OS state with the data from the backup. Proceed?")) {
+        if (state.gemini_api_key) localStorage.setItem('gemini_api_key', state.gemini_api_key);
+        if (state.musephic_todos) localStorage.setItem('musephic_todos', state.musephic_todos);
+        if (state.musephic_finances) localStorage.setItem('musephic_finances', state.musephic_finances);
+        
+        speak("Restoration complete. Neural Link synchronized. Reloading OS.");
+        setTimeout(() => window.location.reload(), 2000);
+      }
+    } catch (err) {
+      alert("Error restoring brain: " + err.message);
+      speak("Sir, the backup file appears corrupted.");
+    }
+  };
+  reader.readAsText(file);
+}
+
+// Attach to window for onclick handlers
+window.exportState = exportState;
+window.importState = importState;

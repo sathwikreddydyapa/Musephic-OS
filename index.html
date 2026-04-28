@@ -5,8 +5,21 @@
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Musephic OS | Sentinel Edition</title>
+    <style>
+      #starfield {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        pointer-events: none;
+        background: #020617;
+      }
+    </style>
   </head>
   <body>
+    <canvas id="starfield"></canvas>
     
     <!-- Sentinel HUD (Pseudo-Lock) -->
   <div id="sentinel-overlay" style="display: none;">
@@ -58,6 +71,25 @@
               </div>
               <div style="font-size: 1.5rem; font-weight: 300;">34.2% <span style="font-size: 0.7rem; color: #00ff88; font-weight:600;">OPTIMAL</span></div>
             </div>
+          </aside>
+
+          <aside class="glass-panel bento-box" id="system-status-panel">
+            <div class="panel-header">DIAGNOSTICS</div>
+            <div class="diagnostic-grid">
+              <div class="diag-item">
+                <span class="diag-label">NEURAL</span>
+                <span id="status-api" class="diag-value" style="color: #00d2ff;">SECURE</span>
+              </div>
+              <div class="diag-item">
+                <span class="diag-label">MIC</span>
+                <span id="status-mic" class="diag-value" style="color: #ff00ff;">READY</span>
+              </div>
+              <div class="diag-item">
+                <span class="diag-label">POWER</span>
+                <span id="status-battery" class="diag-value">---%</span>
+              </div>
+            </div>
+            <div id="status-loc" style="margin-top: 10px; font-size: 0.6rem; color: var(--text-dim);">LOCATING...</div>
           </aside>
 
           <aside class="glass-panel panel-finance bento-box">
@@ -172,6 +204,16 @@
               <div class="tool-icon">📝</div>
               <h3>TELEPROMPTER</h3>
               <p>Script to Screen</p>
+            </div>
+            <div class="tool-card" data-tool="social_command_center" style="background: rgba(255, 0, 255, 0.1); border-color: #ff00ff;">
+              <div class="tool-icon">📱</div>
+              <h3>SOCIAL COMMAND</h3>
+              <p>Multi-Agent Viral Engine</p>
+            </div>
+            <div class="tool-card" data-tool="executive_os" style="background: rgba(255, 255, 255, 0.1); border-color: #fff;">
+              <div class="tool-icon">👔</div>
+              <h3>EXECUTIVE OS</h3>
+              <p>Lead Operations Architect</p>
             </div>
             <div class="tool-card" data-tool="yt_description">
               <div class="tool-icon">▶️</div>
@@ -410,6 +452,11 @@
               <h3>CUSTOMIZE</h3>
               <p>Any Skill To Me</p>
             </div>
+            <div class="tool-card" data-tool="data_vault" style="background: rgba(0, 210, 255, 0.1); border-color: var(--accent-blue);">
+              <div class="tool-icon">💾</div>
+              <h3>DATA VAULT</h3>
+              <p>Backup & Sync State</p>
+            </div>
             <div class="tool-card" data-tool="diagram_generator">
               <div class="tool-icon">📊</div>
               <h3>DIAGRAM GENERATOR</h3>
@@ -441,17 +488,6 @@
           </div>
         </div>
       </div>
-    </div>
-  </div>
-
-  <!-- Neural Link Activation Modal (Only shows if API Key is missing) -->
-  <div id="neural-link-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(20px);">
-    <div class="glass-panel" style="width: 400px; text-align: center; border: 1px solid var(--accent-blue); box-shadow: 0 0 50px rgba(0, 210, 255, 0.2);">
-      <div class="panel-header" style="color: var(--accent-blue);">NEURAL LINK ACTIVATION</div>
-      <p style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 20px;">System detected a port migration. Please re-establish the Gemini Neural Link to continue.</p>
-      <input type="password" id="api-key-input" placeholder="Enter Gemini API Key..." style="width: 100%; padding: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; margin-bottom: 20px; font-family: var(--font-main);">
-      <button id="save-api-key-btn" class="primary-action-btn" style="width: 100%;">ESTABLISH LINK</button>
-      <div style="margin-top: 15px; font-size: 0.6rem; color: var(--text-dim);">This key will be stored locally on your machine.</div>
     </div>
   </div>
 
