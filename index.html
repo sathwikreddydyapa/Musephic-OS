@@ -1,132 +1,132 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Musephic OS | Sentinel Edition</title>
-    <script>
-      function forceOpen() {
-        const overlay = document.getElementById('init-overlay');
-        const app = document.getElementById('app');
-        if (overlay) overlay.style.display = 'none';
-        if (app) app.style.display = 'block';
-        if (window.speechSynthesis) window.speechSynthesis.resume();
-      }
-    </script>
-  </head>
-  <body>
-    <canvas id="starfield"></canvas>
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MUSEPHIC OS | Galaxy Network</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+  <script>
+    function forceOpen() {
+      const overlay = document.getElementById('init-overlay');
+      const app = document.getElementById('app');
+      if (overlay) overlay.style.display = 'none';
+      if (app) app.style.display = 'grid';
+      if (window.speechSynthesis) window.speechSynthesis.resume();
+    }
+  </script>
+</head>
+<body>
+  <canvas id="starfield"></canvas>
+
+  <div id="init-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+    <h1 style="font-family: 'Orbitron'; color: #00f2ff; letter-spacing: 10px; margin-bottom: 20px;">MUSEPHIC</h1>
+    <button id="init-btn" onclick="forceOpen()" style="background: transparent; border: 1px solid #00f2ff; color: #00f2ff; padding: 15px 30px; font-family: 'Orbitron'; cursor: pointer; letter-spacing: 2px;">SYNC NEURAL BRIDGE</button>
+  </div>
+
+  <div id="app" style="display: none;">
     
-    <!-- INITIALIZATION OVERLAY -->
-    <div id="init-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 10000; background: #020617; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-      <h1 style="font-family: 'Syncopate'; font-size: 3rem; color: #00f2ff; letter-spacing: 10px; margin-bottom: 40px;">MUSEPHIC</h1>
-      <button id="init-btn" onclick="forceOpen()" style="background: transparent; border: 1px solid #00f2ff; color: #00f2ff; padding: 15px 40px; font-family: 'Outfit'; cursor: pointer; letter-spacing: 3px; transition: all 0.3s ease;">SYNC NEURAL BRIDGE</button>
+    <!-- HEADER -->
+    <header class="galaxy-panel header-main">
+      <div class="os-logo-box">
+        <div class="os-title glow-text">MUSEPHIC OS</div>
+        <div class="os-sub">ADVANCED SPATIAL INTERFACE v2.4</div>
+        <div class="network-status">CONNECTED: GALAXY NETWORK</div>
+      </div>
+    </header>
+
+    <!-- CENTER MAPPING -->
+    <section class="galaxy-panel quantum-mapping">
+      <div class="panel-header">QUANTUM MAPPING <span id="sector-label">SECTOR A4</span></div>
+      <div class="mapping-core">
+        <div class="mapping-rings"></div>
+        <img src="muse_avatar.png" alt="Core" style="width: 120px; z-index: 10; opacity: 0.8; filter: drop-shadow(0 0 20px #00f2ff);">
+      </div>
+    </section>
+
+    <!-- SYSTEM STATUS -->
+    <aside class="galaxy-panel system-status">
+      <div class="panel-header">SYSTEM STATUS</div>
+      <div class="panel-content">
+        <div class="stat-row">
+          <span>RAM</span>
+          <div class="stat-bar-bg"><div class="stat-bar-fill" style="width: 78%;"></div></div>
+          <span style="margin-left: 10px;">78%</span>
+        </div>
+        <div class="stat-row">
+          <span>CPU</span>
+          <div class="stat-bar-bg"><div class="stat-bar-fill" style="width: 42%;"></div></div>
+          <span style="margin-left: 10px;">4.2 GHz</span>
+        </div>
+        <div class="stat-row">
+          <span>NETWORK</span>
+          <div class="stat-bar-bg"><div class="stat-bar-fill" style="width: 98%;"></div></div>
+          <span style="margin-left: 10px;">98%</span>
+        </div>
+        <div style="margin-top: 30px; text-align: center;">
+          <div style="font-size: 0.7rem; color: var(--text-dim);">SYSTEM HEALTH</div>
+          <div style="font-size: 1.5rem; color: var(--accent-cyan); font-family: 'Orbitron';">98%</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ACTIVITY LOG -->
+    <aside class="galaxy-panel activity-log">
+      <div class="panel-header" style="color: var(--accent-purple); border-color: var(--accent-purple);">ACTIVITY LOG</div>
+      <div class="panel-content">
+        <div id="console" class="log-container">
+          <div class="log-line"><span>></span> USER_09 CONNECTED</div>
+          <div class="log-line"><span>></span> ENCRYPTION ACTIVE</div>
+          <div class="log-line"><span>></span> NEURAL LINK SYNCED</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ALERT PANEL -->
+    <aside class="galaxy-panel alert-panel">
+      <div class="panel-header" style="color: var(--accent-alert); border-color: var(--accent-alert);">ALERT PANEL</div>
+      <div class="panel-content">
+        <div class="alert-box">
+          <div class="alert-icon">⚠</div>
+          <div style="font-family: 'Orbitron'; font-size: 0.8rem; text-align: center;">WARNING: ANOMALY B17</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- LOWER CONTROLS -->
+    <div class="galaxy-panel panel-piles">
+      <div class="panel-header">PILES</div>
+      <div class="panel-content" style="display: flex; justify-content: center; align-items: center; font-size: 2rem;">📁</div>
     </div>
 
-    <div id="app" style="display: none;">
-      <!-- TOP NAVIGATION -->
-      <nav class="top-nav">
-        <div class="nav-brand">MUSEPHIC</div>
-        <div class="nav-links">
-          <span>HOME</span>
-          <span id="open-studio-btn">STUDIO</span>
-          <span>SETTINGS</span>
-          <span>ABOUT</span>
-        </div>
-      </nav>
-
-      <!-- LEFT WING -->
-      <div class="hologram-panel widget-left-top">
-        <div class="panel-title">📍 LOCATION</div>
-        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-          <span style="font-size: 1.2rem;">🇮🇳</span>
-          <div style="font-size: 0.9rem; font-weight: bold;" id="location-name">Bengaluru</div>
-        </div>
-        <div id="status-loc" style="font-size: 0.6rem; color: #00f2ff; opacity: 0.7;">LAT: 12.97 / LNG: 77.59</div>
-      </div>
-
-      <div class="hologram-panel widget-left-bottom">
-        <div class="panel-title">⚙️ SYSTEM STATUS</div>
-        <div class="diagnostic-item">
-          <span class="diag-label">BATTERY</span>
-          <span id="status-battery" class="diag-value">--%</span>
-        </div>
-        <div class="diagnostic-item">
-          <span class="diag-label">NETWORK</span>
-          <span id="status-net" class="diag-value" style="color: #00ff88;">ONLINE</span>
-        </div>
-        <div class="diagnostic-item">
-          <span class="diag-label">CONNECTION</span>
-          <span class="diag-value">5G <span class="status-dot"></span></span>
-        </div>
-        <div class="diagnostic-item">
-          <span class="diag-label">BLUETOOTH</span>
-          <span class="diag-value">READY <span class="status-dot"></span></span>
-        </div>
-      </div>
-
-      <!-- CENTER CORE -->
-      <div class="ai-core-container">
-        <div class="ai-sphere" id="talk-btn"></div>
-      </div>
-
-      <!-- RIGHT WING -->
-      <div class="hologram-panel widget-right-top">
-        <div class="panel-title">🛡️ SECURITY</div>
-        <div class="diagnostic-item"><span class="diag-label">NEURAL LINK</span><span id="status-api" class="diag-value">SECURE <span class="status-dot"></span></span></div>
-        <div class="diagnostic-item"><span class="diag-label">MIC ARRAY</span><span id="status-mic" class="diag-value">LISTENING <span class="status-dot"></span></span></div>
-      </div>
-
-      <div class="hologram-panel widget-right-bottom">
-        <div class="panel-title">📊 SYSTEM_INFO</div>
-        <div id="clock" style="font-size: 2rem; font-weight: 300; margin-bottom: 5px;">00:00:00</div>
-        <div id="date" style="font-size: 0.7rem; color: #00f2ff; margin-bottom: 15px;">SUN, FEB 8</div>
-        <div class="diagnostic-item">
-          <span class="diag-label">UPTIME</span>
-          <span class="diag-value">10h</span>
-        </div>
-        <div class="diagnostic-item">
-          <span class="diag-label">COMMANDS</span>
-          <span class="diag-value">1</span>
-        </div>
-      </div>
-
-      <!-- BOTTOM CENTER -->
-      <div class="bottom-status">
-        <div class="greeting-text" id="greeting-text">Good Afternoon, Sir</div>
-        <div class="sub-greeting">MONITORING ALL SYSTEMS // MUSEPHIC ACTIVE</div>
-      </div>
-
-      <!-- SYSTEM LOG -->
-      <div class="hologram-panel system-log">
-        <div class="panel-title">CONSOLE // SYSTEM_LOG</div>
-        <div id="console" style="height: 60px; overflow-y: auto;">
-          <div class="log-entry"><span class="user-tag">SYSTEM</span> Neural Link Established.</div>
-        </div>
+    <div class="galaxy-panel panel-projects">
+      <div class="panel-header">PROJECTS</div>
+      <div class="panel-content" style="display: flex; gap: 20px; justify-content: center;">
+        <div style="font-size: 1.5rem;">💎</div>
+        <div style="font-size: 1.5rem;">📂</div>
+        <div style="font-size: 1.5rem;">📝</div>
       </div>
     </div>
 
-    <!-- CONTENT STUDIO (Floating Overlay) -->
-    <div id="content-studio-overlay" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1000; width: 80%; height: 80%;">
-       <div class="hologram-panel" style="width: 100%; height: 100%; overflow-y: auto;">
-         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-           <h2 style="font-family: 'Syncopate'; color: #00f2ff;">CREATOR STUDIO</h2>
-           <button id="close-studio-btn" style="background: none; border: 1px solid #ff0055; color: #ff0055; cursor: pointer;">[X]</button>
-         </div>
-         <div id="studio-output-area" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(0,242,255,0.1); padding: 20px; border-radius: 10px; min-height: 200px; margin-bottom: 20px;">
-           Awaiting instruction...
-         </div>
-         <div style="display: flex; gap: 10px;">
-           <input type="text" id="user-prompt-input" placeholder="Enter directive..." style="flex: 1; background: rgba(0,0,0,0.5); border: 1px solid #00f2ff; color: #fff; padding: 15px; border-radius: 5px;">
-           <button id="execute-task-btn" style="background: #00f2ff; color: #000; font-weight: bold; padding: 0 30px; border: none; border-radius: 5px; cursor: pointer;">EXECUTE</button>
-         </div>
-         <div id="tool-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-top: 30px;">
-            <!-- Tools populated by main.js logic -->
-         </div>
-       </div>
+    <div class="galaxy-panel panel-settings">
+      <div class="panel-header">SETTINGS</div>
+      <div class="panel-content" style="display: flex; gap: 20px; justify-content: center;">
+        <div style="font-size: 1.5rem;">⚙</div>
+        <div style="font-size: 1.5rem;">🔧</div>
+        <div style="font-size: 1.5rem;">👤</div>
+      </div>
     </div>
 
-    <script type="module" src="/src/main.js"></script>
-  </body>
+    <div class="galaxy-panel panel-comms">
+      <div class="panel-header">COMMS</div>
+      <div class="panel-content" style="display: flex; flex-direction: column; gap: 10px; align-items: center; justify-content: center;">
+        <button id="talk-btn" style="background: transparent; border: 1px solid var(--accent-cyan); color: var(--accent-cyan); padding: 5px 10px; font-size: 0.6rem;">OVERRIDE</button>
+        <div id="mic-status" style="font-size: 0.6rem; color: var(--text-dim);">STANDBY</div>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
 </html>
