@@ -1092,3 +1092,6 @@ async function importState(input) {
 // Attach to window for onclick handlers
 window.exportState = exportState;
 window.importState = importState;
+
+// BOOTSTRAP OS
+init();
